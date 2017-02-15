@@ -11,6 +11,10 @@ public enum UserStorage {
 
 	private UserStorage() {
 		User user = new User("1", "Simone");
+		user.setCountry("Italy");
+		user.setState("CO");
+		user.setTown("Guanzate");
+		user.setMail("simone@mail.com");
 		contentProvider.put("1", user);
 		User user2 = new User("2", "Luca");
 		contentProvider.put("2", user2);

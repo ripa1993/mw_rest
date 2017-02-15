@@ -55,10 +55,23 @@ public class UsersResource {
 	@POST
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public void newUser(@FormParam("id") String id, @FormParam("name") String name,
+	public void newUser(@FormParam("id") String id, @FormParam("name") String name, @FormParam("mail") String mail,
+			@FormParam("country") String country, @FormParam("state") String state, @FormParam("town") String town,
 			@Context HttpServletResponse servletResponse) throws IOException {
 		User user = new User(id, name);
 		UserStorage.instance.getModel().put(id, user);
+		if(mail!=null){
+			user.setMail(mail);
+		}
+		if(country!=null){
+			user.setCountry(country);
+		}
+		if(state!=null){
+			user.setState(state);
+		}
+		if(town!=null){
+			user.setTown(town);
+		}
 		servletResponse.sendRedirect("../create_user.html");
 	}
 
