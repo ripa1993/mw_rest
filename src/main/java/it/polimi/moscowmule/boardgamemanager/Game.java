@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement
 @XmlType(propOrder = { "id", "name", "minPlayers", "maxPlayers", "playTime", "minAge", "difficulty", "designer",
-		"artist", "publisher" })
+		"artist", "publisher", "coverArt", "uri" })
 public class Game {
 	private String id;
 	private String name;
@@ -17,6 +17,8 @@ public class Game {
 	private String designer;
 	private String artist;
 	private String publisher;
+	private String coverArt;
+	private String uri;
 
 	public Game() {
 
@@ -25,6 +27,7 @@ public class Game {
 	public Game(String id, String name) {
 		this.id = id;
 		this.name = name;
+		this.uri = "http://localhost:8080/boardgamemanager/rest/games/"+id;
 	}
 
 	public String getId() {
@@ -105,5 +108,21 @@ public class Game {
 
 	public void setPublisher(String publisher) {
 		this.publisher = publisher;
+	}
+
+	public String getCoverArt() {
+		return coverArt;
+	}
+
+	public void setCoverArt(String coverArt) {
+		this.coverArt = coverArt;
+	}
+
+	public String getUri() {
+		return uri;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 }
