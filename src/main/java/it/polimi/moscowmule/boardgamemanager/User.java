@@ -20,7 +20,7 @@ public class User {
 	public User(String id, String name) {
 		this.id = id;
 		this.name = name;
-		this.uri = "http:////localhost:8080//boardgamemanager//rest//users//"+id;
+		this.uri = "http://localhost:8080/boardgamemanager/rest/users/"+id;
 	}
 
 	public String getId() {
