@@ -79,4 +79,12 @@ public class UsersResource {
 	public UserResource getUser(@PathParam("user") String id) {
 		return new UserResource(uriInfo, request, id);
 	}
+	
+	@GET
+	@Path("{user}/plays")
+	@Produces(MediaType.TEXT_PLAIN)
+	public void showPlays(@PathParam("user") String id){
+		// TODO: show the plays by this user
+	}
+	
 }
