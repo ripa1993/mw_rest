@@ -2,6 +2,7 @@ package it.polimi.moscowmule.boardgamemanager.user;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +17,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
+
+import it.polimi.moscowmule.boardgamemanager.play.Play;
+import it.polimi.moscowmule.boardgamemanager.play.PlayStorage;
 
 // resource relative to a group of users
 @Path("/users")
@@ -42,6 +46,10 @@ public class UsersResource {
 		users.addAll(UserStorage.instance.getModel().values());
 		return users;
 	}
+	
+	// TODO: filter by 
+	
+	// TODO: order by
 
 	// count of users
 	@GET
@@ -82,9 +90,21 @@ public class UsersResource {
 	
 	@GET
 	@Path("{user}/plays")
-	@Produces(MediaType.TEXT_PLAIN)
-	public void showPlays(@PathParam("user") String id){
-		// TODO: show the plays by this user
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public List<Play> showPlays(@PathParam("user") String id){
+		List<Play> plays = new ArrayList<Play>();
+		Iterator<Play> it = PlayStorage.instance.getModel().values().iterator();
+		while(it.hasNext()){
+			Play p = it.next();
+			if (p.getUserId().equals(id)){
+				plays.add(p);
+			}
+		}
+		return plays;
 	}
+	
+	// TODO: filter by 
+	
+	// TODO: order by
 	
 }
