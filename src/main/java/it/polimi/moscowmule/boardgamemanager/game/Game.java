@@ -28,6 +28,7 @@ public class Game {
 		this.id = id;
 		this.name = name;
 		this.uri = "http://localhost:8080/boardgamemanager/rest/games/"+id;
+		this.coverArt = "http://localhost:8080/boardgamemanager/rest/img/"+id+".jpg";
 	}
 
 	public String getId() {

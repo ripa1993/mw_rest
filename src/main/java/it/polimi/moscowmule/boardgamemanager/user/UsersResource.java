@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -24,7 +26,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import org.glassfish.jersey.server.mvc.Viewable;
 
 import it.polimi.moscowmule.boardgamemanager.play.Play;
 import it.polimi.moscowmule.boardgamemanager.play.PlayStorage;
@@ -107,8 +112,8 @@ public class UsersResource {
 
 	// browser
 	@GET
-	@Produces(MediaType.TEXT_XML)
-	public List<User> getUsersBrowser(@DefaultValue("") @QueryParam("filter") String filter,
+	@Produces(MediaType.TEXT_HTML)
+	public Response getUsersBrowser(@DefaultValue("") @QueryParam("filter") String filter,
 			@DefaultValue("") @QueryParam("value") String value,
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
@@ -161,7 +166,10 @@ public class UsersResource {
 		if (order.equals("desc")) {
 			Collections.reverse(users);
 		}
-		return users;
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("users", users);
+		return Response.ok(new Viewable("/user_list", map)).build();
 	}
 
 	// count of users

@@ -1,5 +1,8 @@
 package it.polimi.moscowmule.boardgamemanager.game;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -11,6 +14,8 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
+
+import org.glassfish.jersey.server.mvc.Viewable;
 
 public class GameResource {
 	@Context
@@ -37,12 +42,14 @@ public class GameResource {
 
 	// browser
 	@GET
-	@Produces(MediaType.TEXT_XML)
-	public Game getGameBrowser() {
+	@Produces(MediaType.TEXT_HTML)
+	public Response getGameBrowser() {
 		Game game = GameStorage.instance.getModel().get(id);
 		if (id == null)
 			throw new RuntimeException("Get: Game with " + id + " not found");
-		return game;
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("game", game);
+		return Response.ok(new Viewable("/game_detail", map)).build();
 	}
 
 	@PUT
