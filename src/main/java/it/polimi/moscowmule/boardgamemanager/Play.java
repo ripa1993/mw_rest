@@ -3,8 +3,10 @@ package it.polimi.moscowmule.boardgamemanager;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement
+@XmlType(propOrder={"id", "userId", "gameId", "date", "timeToComplete", "numPlayers", "winnerId", "uri", "userUri", "gameUri", "winnerUri"})
 public class Play {
 	private String id;
 	private String userId;
@@ -14,6 +16,9 @@ public class Play {
 	private int numPlayers; // that partecipated
 	private String winnerId; // that won the game
 	private String uri;
+	private String userUri;
+	private String gameUri;
+	private String winnerUri;
 
 	public Play() {
 
@@ -25,6 +30,8 @@ public class Play {
 		this.gameId = gameId;
 		this.date = date;
 		this.setUri("http://localhost:8080/boardgamemanager/rest/plays/"+id);
+		this.setUserUri("http://localhost:8080/boardgamemanager/rest/users/"+userId);
+		this.setGameUri("http://localhost:8080/boardgamemanager/rest/games/"+gameId);
 
 	}
 
@@ -82,6 +89,7 @@ public class Play {
 
 	public void setWinnerId(String winnerId) {
 		this.winnerId = winnerId;
+		this.setWinnerUri("http://localhost:8080/boardgamemanager/rest/users/"+winnerId);
 	}
 
 	public String getUri() {
@@ -90,5 +98,29 @@ public class Play {
 
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+
+	public String getUserUri() {
+		return userUri;
+	}
+
+	public void setUserUri(String userUri) {
+		this.userUri = userUri;
+	}
+
+	public String getGameUri() {
+		return gameUri;
+	}
+
+	public void setGameUri(String gameUri) {
+		this.gameUri = gameUri;
+	}
+
+	public String getWinnerUri() {
+		return winnerUri;
+	}
+
+	public void setWinnerUri(String winnerUri) {
+		this.winnerUri = winnerUri;
 	}
 }
