@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,14 +57,6 @@ public class GamesResource {
 		return String.valueOf(count);
 	}
 
-	@GET
-	@Path("location")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getLocation(){
-		java.nio.file.Path currentRelativePath = Paths.get("");
-		String s = currentRelativePath.toAbsolutePath().toString();
-		return s;
-	}
 	
 	@POST
 	@Produces(MediaType.TEXT_HTML)
@@ -128,5 +119,9 @@ public class GamesResource {
 	public GameResource getGame(@PathParam("game") String id) {
 		return new GameResource(uriInfo, request, id);
 	}
+	
+	// TODO: filter by 
+	
+	// TODO: order by
 
 }
