@@ -1,4 +1,4 @@
-package it.polimi.moscowmule.boardgamemanager;
+package it.polimi.moscowmule.boardgamemanager.user;
 
 import java.util.HashMap;
 import java.util.Map;

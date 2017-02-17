@@ -1,4 +1,4 @@
-package it.polimi.moscowmule.boardgamemanager;
+package it.polimi.moscowmule.boardgamemanager.game;
 
 import java.io.File;
 import java.io.FileOutputStream;

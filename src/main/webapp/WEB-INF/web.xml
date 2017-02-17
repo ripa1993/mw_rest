@@ -13,7 +13,7 @@
 		</init-param>
 		<init-param>
 			<param-name>javax.ws.rs.Application</param-name>
-			<param-value>it.polimi.moscowmule.boardgamemanager.MultiPartApp</param-value>
+			<param-value>it.polimi.moscowmule.boardgamemanager.config.MultiPartApp</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>

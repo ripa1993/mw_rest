@@ -1,4 +1,4 @@
-package it.polimi.moscowmule.boardgamemanager;
+package it.polimi.moscowmule.boardgamemanager.game;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;

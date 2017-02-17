@@ -1,4 +1,4 @@
-package it.polimi.moscowmule.boardgamemanager;
+package it.polimi.moscowmule.boardgamemanager.play;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -19,6 +19,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
+
+import it.polimi.moscowmule.boardgamemanager.game.GameStorage;
+import it.polimi.moscowmule.boardgamemanager.user.UserStorage;
 
 @Path("/plays")
 public class PlaysResource {

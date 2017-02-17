@@ -1,4 +1,4 @@
-package it.polimi.moscowmule.boardgamemanager;
+package it.polimi.moscowmule.boardgamemanager.config;
 
 import javax.ws.rs.ApplicationPath;
 

@@ -1,4 +1,4 @@
-package it.polimi.moscowmule.boardgamemanager;
+package it.polimi.moscowmule.boardgamemanager.user;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
