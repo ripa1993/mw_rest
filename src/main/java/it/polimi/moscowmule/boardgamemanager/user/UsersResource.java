@@ -2,17 +2,21 @@ package it.polimi.moscowmule.boardgamemanager.user;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -30,11 +34,71 @@ public class UsersResource {
 	Request request;
 
 	// application
+	// /users?filter=all&value=all&orderby=id&order=asc
+	// legal parameters
+	// filter = name, country, state, town
+	// value = anything
+	// if value = "" or filter = "" then no filtering is performed
+	// orderby = name, country, state, town
+	// if no valid orderby is specified then default "id" is used
+	// order = *, desc
+	// if desc then descending, otherwise ascending
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<User> getUsers() {
+	public List<User> getUsers(@DefaultValue("") @QueryParam("filter") String filter,
+			@DefaultValue("") @QueryParam("value") String value,
+			@DefaultValue("id") @QueryParam("orderby") String orderby,
+			@DefaultValue("asc") @QueryParam("order") String order) {
+		// new list of users
 		List<User> users = new ArrayList<User>();
 		users.addAll(UserStorage.instance.getModel().values());
+		
+		// filter
+		if (!value.equals("")) {
+			switch (filter) {
+			case "name":
+				users.removeIf(u -> !u.getName().equals(value));
+				break;
+			case "country":
+				users.removeIf(u -> !u.getCountry().equals(value));
+				break;
+			case "state":
+				users.removeIf(u -> !u.getState().equals(value));
+				break;
+			case "town":
+				users.removeIf(u -> !u.getTown().equals(value));
+				break;
+			}
+		}
+		
+		// order
+		if(!orderby.equals("") || !orderby.equals("id")){
+			Comparator<User> comp = (User a, User b) -> a.getId().compareTo(b.getId());
+			switch(orderby){
+			case "name":
+				comp = (User a, User b) -> a.getName().compareTo(b.getName());
+				break;
+				
+			case "country":
+				comp = (User a, User b) -> a.getCountry().compareTo(b.getCountry());
+				break;
+				
+			case "state":
+				comp = (User a, User b) -> a.getState().compareTo(b.getState());
+				break;
+				
+			case "town":
+				comp = (User a, User b) -> a.getTown().compareTo(b.getTown());
+				break;
+			}
+			Collections.sort(users, comp);
+		}
+
+		
+		// if descending
+		if (order.equals("desc")) {
+			Collections.reverse(users);
+			}
 		return users;
 	}
 
@@ -46,9 +110,9 @@ public class UsersResource {
 		users.addAll(UserStorage.instance.getModel().values());
 		return users;
 	}
-	
-	// TODO: filter by 
-	
+
+	// TODO: filter by
+
 	// TODO: order by
 
 	// count of users
@@ -68,16 +132,16 @@ public class UsersResource {
 			@Context HttpServletResponse servletResponse) throws IOException {
 		User user = new User(id, name);
 		UserStorage.instance.getModel().put(id, user);
-		if(mail!=null){
+		if (mail != null) {
 			user.setMail(mail);
 		}
-		if(country!=null){
+		if (country != null) {
 			user.setCountry(country);
 		}
-		if(state!=null){
+		if (state != null) {
 			user.setState(state);
 		}
-		if(town!=null){
+		if (town != null) {
 			user.setTown(town);
 		}
 		servletResponse.sendRedirect("../create_user.html");
@@ -87,24 +151,24 @@ public class UsersResource {
 	public UserResource getUser(@PathParam("user") String id) {
 		return new UserResource(uriInfo, request, id);
 	}
-	
+
 	@GET
 	@Path("{user}/plays")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<Play> showPlays(@PathParam("user") String id){
+	public List<Play> showPlays(@PathParam("user") String id) {
 		List<Play> plays = new ArrayList<Play>();
 		Iterator<Play> it = PlayStorage.instance.getModel().values().iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			Play p = it.next();
-			if (p.getUserId().equals(id)){
+			if (p.getUserId().equals(id)) {
 				plays.add(p);
 			}
 		}
 		return plays;
 	}
-	
-	// TODO: filter by 
-	
+
+	// TODO: filter by
+
 	// TODO: order by
-	
+
 }
