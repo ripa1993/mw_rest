@@ -1,9 +1,13 @@
 package it.polimi.moscowmule.boardgamemanager.user;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,7 +56,7 @@ public class UsersResource {
 		// new list of users
 		List<User> users = new ArrayList<User>();
 		users.addAll(UserStorage.instance.getModel().values());
-		
+
 		// filter
 		if (!value.equals("")) {
 			switch (filter) {
@@ -70,23 +74,23 @@ public class UsersResource {
 				break;
 			}
 		}
-		
+
 		// order
-		if(!orderby.equals("") || !orderby.equals("id")){
+		if (!orderby.equals("") || !orderby.equals("id")) {
 			Comparator<User> comp = (User a, User b) -> a.getId().compareTo(b.getId());
-			switch(orderby){
+			switch (orderby) {
 			case "name":
 				comp = (User a, User b) -> a.getName().compareTo(b.getName());
 				break;
-				
+
 			case "country":
 				comp = (User a, User b) -> a.getCountry().compareTo(b.getCountry());
 				break;
-				
+
 			case "state":
 				comp = (User a, User b) -> a.getState().compareTo(b.getState());
 				break;
-				
+
 			case "town":
 				comp = (User a, User b) -> a.getTown().compareTo(b.getTown());
 				break;
@@ -94,26 +98,71 @@ public class UsersResource {
 			Collections.sort(users, comp);
 		}
 
-		
 		// if descending
 		if (order.equals("desc")) {
 			Collections.reverse(users);
-			}
+		}
 		return users;
 	}
 
 	// browser
 	@GET
 	@Produces(MediaType.TEXT_XML)
-	public List<User> getUsersBrowser() {
+	public List<User> getUsersBrowser(@DefaultValue("") @QueryParam("filter") String filter,
+			@DefaultValue("") @QueryParam("value") String value,
+			@DefaultValue("id") @QueryParam("orderby") String orderby,
+			@DefaultValue("asc") @QueryParam("order") String order) {
+		// new list of users
 		List<User> users = new ArrayList<User>();
 		users.addAll(UserStorage.instance.getModel().values());
+
+		// filter
+		if (!value.equals("")) {
+			switch (filter) {
+			case "name":
+				users.removeIf(u -> !u.getName().equals(value));
+				break;
+			case "country":
+				users.removeIf(u -> !u.getCountry().equals(value));
+				break;
+			case "state":
+				users.removeIf(u -> !u.getState().equals(value));
+				break;
+			case "town":
+				users.removeIf(u -> !u.getTown().equals(value));
+				break;
+			}
+		}
+
+		// order
+		if (!orderby.equals("") || !orderby.equals("id")) {
+			Comparator<User> comp = (User a, User b) -> a.getId().compareTo(b.getId());
+			switch (orderby) {
+			case "name":
+				comp = (User a, User b) -> a.getName().compareTo(b.getName());
+				break;
+
+			case "country":
+				comp = (User a, User b) -> a.getCountry().compareTo(b.getCountry());
+				break;
+
+			case "state":
+				comp = (User a, User b) -> a.getState().compareTo(b.getState());
+				break;
+
+			case "town":
+				comp = (User a, User b) -> a.getTown().compareTo(b.getTown());
+				break;
+			}
+			Collections.sort(users, comp);
+		}
+
+		// if descending
+		if (order.equals("desc")) {
+			Collections.reverse(users);
+		}
 		return users;
 	}
-
-	// TODO: filter by
-
-	// TODO: order by
 
 	// count of users
 	@GET
@@ -155,7 +204,10 @@ public class UsersResource {
 	@GET
 	@Path("{user}/plays")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<Play> showPlays(@PathParam("user") String id) {
+	public List<Play> showPlays(@PathParam("user") String id, @DefaultValue("") @QueryParam("date") String date,
+			@DefaultValue("") @QueryParam("game") String game,
+			@DefaultValue("id") @QueryParam("orderby") String orderby,
+			@DefaultValue("asc") @QueryParam("order") String order) {
 		List<Play> plays = new ArrayList<Play>();
 		Iterator<Play> it = PlayStorage.instance.getModel().values().iterator();
 		while (it.hasNext()) {
@@ -164,11 +216,42 @@ public class UsersResource {
 				plays.add(p);
 			}
 		}
+		// filter
+		if (!date.equals("")) {
+			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			Date dateD;
+			try {
+				dateD = df.parse(date);
+				plays.removeIf(p -> !p.getDate().equals(dateD));
+			} catch (ParseException e) {
+				// do nothing if date is not valid
+			}
+		}
+		if (!game.equals("")) {
+			plays.removeIf(p -> !p.getGameId().equals(game));
+		}
+
+		// order
+		if (!orderby.equals("") || !orderby.equals("id")) {
+			Comparator<Play> comp = (Play a, Play b) -> a.getId().compareTo(b.getId());
+			switch (orderby) {
+			case "date":
+				comp = (Play a, Play b) -> a.getDate().compareTo(b.getDate());
+				break;
+
+			case "game":
+				comp = (Play a, Play b) -> a.getGameId().compareTo(b.getGameId());
+				break;
+			}
+			Collections.sort(plays, comp);
+		}
+
+		// if descending
+		if (order.equals("desc")) {
+			Collections.reverse(plays);
+		}
+
 		return plays;
 	}
-
-	// TODO: filter by
-
-	// TODO: order by
 
 }

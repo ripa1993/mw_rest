@@ -1,16 +1,25 @@
 package it.polimi.moscowmule.boardgamemanager.image;
 
 import java.io.File;
+import java.util.Arrays;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/img")
 public class ImagesResource {
 	private static final String FOLDER = "C://boardgamemanager//img//";
+	
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getContent(){
+		File f = new File(FOLDER);
+		return Arrays.toString(f.list());
+	}
 	
 	@GET
 	@Path("{filename}")
