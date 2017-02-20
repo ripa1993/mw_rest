@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement
-@XmlType(propOrder={"id", "name", "mail", "country", "state", "town", "uri"})
+@XmlType(propOrder={"id", "name", "mail", "country", "state", "town", "uri", "playsUri"})
 public class User {
 	private String id;
 	private String name;
@@ -13,6 +13,7 @@ public class User {
 	private String town;
 	private String mail;
 	private String uri;
+	private String playsUri;
 
 	public User() {
 	}
@@ -21,6 +22,8 @@ public class User {
 		this.id = id;
 		this.name = name;
 		this.uri = "http://localhost:8080/boardgamemanager/rest/users/"+id;
+		this.setPlaysUri("http://localhost:8080/boardgamemanager/rest/users/"+id+"/plays");
+
 	}
 
 	public String getId() {
@@ -77,5 +80,13 @@ public class User {
 
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+
+	public String getPlaysUri() {
+		return playsUri;
+	}
+
+	public void setPlaysUri(String playsUri) {
+		this.playsUri = playsUri;
 	}
 }

@@ -13,6 +13,7 @@
 			<li> Country: ${it.user.country }
 			<li> State: ${it.user.state }
 			<li> Town: ${it.user.town }
+			<li> <a href="${it.user.playsUri }">Plays</a>
 		</ul>
 	</div>
 </body>
