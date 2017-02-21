@@ -212,7 +212,7 @@ public class UsersResource {
 	@GET
 	@Path("{user}/plays")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<Play> showPlays(@PathParam("user") String id, @DefaultValue("") @QueryParam("date") String date,
+	public Response showPlays(@PathParam("user") String id, @DefaultValue("") @QueryParam("date") String date,
 			@DefaultValue("") @QueryParam("game") String game,
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
@@ -259,7 +259,10 @@ public class UsersResource {
 			Collections.reverse(plays);
 		}
 
-		return plays;
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("plays", plays);
+		
+		return Response.ok(new Viewable("/play_list", map)).build();
 	}
 
 }

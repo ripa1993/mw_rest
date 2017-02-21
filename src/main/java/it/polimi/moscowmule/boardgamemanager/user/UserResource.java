@@ -46,7 +46,7 @@ public class UserResource {
 	@Produces(MediaType.TEXT_HTML)
 	public Response getUserBrowser() {
 		User user = UserStorage.instance.getModel().get(id);
-		if (id == null)
+		if (user == null)
 			throw new RuntimeException("Get: User with " + id + " not found");
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("user", user);
