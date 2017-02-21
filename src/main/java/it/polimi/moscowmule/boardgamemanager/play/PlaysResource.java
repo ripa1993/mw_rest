@@ -97,7 +97,7 @@ public class PlaysResource {
 		}
 	}
 	
-	@GET
+	
 	@Path("{play}")
 	public PlayResource getPlay(@PathParam("play") String id){
 		return new PlayResource(uriInfo, request, id);
