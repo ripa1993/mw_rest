@@ -70,9 +70,9 @@ public class BusinessRESTResource implements BusinessRESTResourceProxy {
 
 		try {
 			Authenticator authenticator = Authenticator.getInstance();
-			String username = httpHeaders.getHeaderString(HTTPHeaderNames.USERNAME);
+//			String username = httpHeaders.getHeaderString(HTTPHeaderNames.USERNAME);
 			String authToken = httpHeaders.getHeaderString(HTTPHeaderNames.AUTH_TOKEN);
-			authenticator.logout(authToken, username);
+			authenticator.logout(authToken);
 			return Response.noContent().build();
 		} catch (GeneralSecurityException e) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
