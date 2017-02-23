@@ -7,8 +7,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.jsp.JspMvcFeature;
 
 @ApplicationPath("/")
-public class MultiPartApp extends ResourceConfig {
-	public MultiPartApp() {
+public class Config extends ResourceConfig {
+	public Config() {
 		super(MultiPartFeature.class, JspMvcFeature.class );
 	}
 
