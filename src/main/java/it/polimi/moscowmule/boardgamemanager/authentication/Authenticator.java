@@ -90,4 +90,11 @@ public class Authenticator {
 		}
 		return false;
 	}
+	
+	/*
+	 * Create new standard user
+	 */
+	public void create(String id, String password) {
+		usersStorage.put(id, password);
+	}
 }

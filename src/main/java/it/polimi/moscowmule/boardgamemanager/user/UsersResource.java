@@ -31,6 +31,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.server.mvc.Viewable;
 
+import it.polimi.moscowmule.boardgamemanager.authentication.Authenticator;
 import it.polimi.moscowmule.boardgamemanager.play.Play;
 import it.polimi.moscowmule.boardgamemanager.play.PlayStorage;
 
@@ -184,9 +185,12 @@ public class UsersResource {
 	@POST
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public void newUser(@FormParam("id") String id, @FormParam("name") String name, @FormParam("mail") String mail,
+	public void newUser(@FormParam("id") String id, @FormParam("password") String password, @FormParam("name") String name, @FormParam("mail") String mail,
 			@FormParam("country") String country, @FormParam("state") String state, @FormParam("town") String town,
 			@Context HttpServletResponse servletResponse) throws IOException {
+		/*
+		 * Create user instance
+		 */
 		User user = new User(id, name);
 		UserStorage.instance.getModel().put(id, user);
 		if (mail != null) {
@@ -201,6 +205,11 @@ public class UsersResource {
 		if (town != null) {
 			user.setTown(town);
 		}
+		/*
+		 * Create new login information
+		 */
+		Authenticator authenticator = Authenticator.getInstance();
+		authenticator.create(id, password);
 		servletResponse.sendRedirect("../create_user.html");
 	}
 
