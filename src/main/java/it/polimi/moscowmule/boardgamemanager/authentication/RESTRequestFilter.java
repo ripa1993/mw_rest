@@ -37,6 +37,10 @@ public class RESTRequestFilter implements ContainerRequestFilter {
 
 		if (requestContext.getMethod().equals("POST")) {
 			// if there's a POST request
+			if (path.startsWith("users")){
+				// everyone can create users, this to allow new user to register
+				return;
+			}	
 			if (!path.startsWith("login")) {
 				// and it is not about "login"
 				if (!authenticator.isAuthTokenValid(authToken)) {
