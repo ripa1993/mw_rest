@@ -1,8 +1,15 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Board Game Manager</title>
+</head>
 <body>
-    <h2>Jersey RESTful Web Application!</h2>
-    <p><a href="webapi/myresource">Jersey resource</a>
-    <p>Visit <a href="http://jersey.java.net">Project Jersey website</a>
-    for more information on Jersey!
-</body>
+	<jsp:include page="/WEB-INF/jsp/header.jsp">
+		<jsp:param name="title" value="Board Game Manager" />
+	</jsp:include>
+
+	<jsp:include page="/WEB-INF/jsp/footer.jsp" /></body></body>
 </html>
