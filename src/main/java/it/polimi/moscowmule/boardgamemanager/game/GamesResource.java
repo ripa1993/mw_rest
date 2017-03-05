@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,6 +26,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -41,7 +43,7 @@ public class GamesResource {
 	// application
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<Game> getGames(@DefaultValue("") @QueryParam("filter") String filter,
+	public Response getGames(@DefaultValue("") @QueryParam("filter") String filter,
 			@DefaultValue("") @QueryParam("value") String value,
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
@@ -119,7 +121,7 @@ public class GamesResource {
 			Collections.reverse(games);
 		}
 
-		return games;
+		return Response.ok(games).build();
 	}
 
 	// browser
@@ -212,22 +214,32 @@ public class GamesResource {
 	@GET
 	@Path("count")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String getCount() {
+	public Response getCount() {
 		int count = GameStorage.instance.getModel().size();
-		return String.valueOf(count);
+		return Response.ok(String.valueOf(count)).build();
 	}
 
+	// TODO: game id should be generated
 	@POST
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public void newGame(@FormDataParam("id") String id, @FormDataParam("name") String name,
+	public Response newGame(@FormDataParam("id") String id, @FormDataParam("name") String name,
 			@FormDataParam("minPlayers") String minPlayers, @FormDataParam("maxPlayers") String maxPlayers,
 			@FormDataParam("playTime") String playTime, @FormDataParam("minAge") String minAge,
 			@FormDataParam("difficulty") String difficulty, @FormDataParam("designer") String designer,
 			@FormDataParam("artist") String artist, @FormDataParam("publisher") String publisher,
 			@FormDataParam("file") InputStream file, @FormDataParam("file") FormDataContentDisposition header,
 			@Context HttpServletResponse servletResponse) throws IOException {
-
+		/*
+		 * Check if id is already used
+		 */
+		if (GameStorage.instance.getModel().containsKey(id)){
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+		
+		/*
+		 * Create new game
+		 */
 		Game game = new Game(id, name);
 		GameStorage.instance.getModel().put(id, game);
 		if (minPlayers != null) {
@@ -271,6 +283,7 @@ public class GamesResource {
 		game.setCoverArt("http://localhost:8080/boardgameamanger/rest/img/" + id);
 
 		servletResponse.sendRedirect("../create_game.html");
+		return Response.created(URI.create("http://localhost:8080/boardgameamanger/rest/games/"+id)).build();
 	}
 
 	@Path("{game}")

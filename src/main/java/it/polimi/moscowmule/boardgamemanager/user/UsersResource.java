@@ -1,6 +1,7 @@
 package it.polimi.moscowmule.boardgamemanager.user;
 
 import java.io.IOException;
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,6 +28,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.server.mvc.Viewable;
@@ -55,7 +57,7 @@ public class UsersResource {
 	// if desc then descending, otherwise ascending
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<User> getUsers(@DefaultValue("") @QueryParam("filter") String filter,
+	public Response getUsers(@DefaultValue("") @QueryParam("filter") String filter,
 			@DefaultValue("") @QueryParam("value") String value,
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
@@ -108,7 +110,7 @@ public class UsersResource {
 		if (order.equals("desc")) {
 			Collections.reverse(users);
 		}
-		return users;
+		return Response.ok(users).build();
 	}
 
 	// browser
@@ -177,17 +179,24 @@ public class UsersResource {
 	@GET
 	@Path("count")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String getCount() {
+	public Response getCount() {
 		int count = UserStorage.instance.getModel().size();
-		return String.valueOf(count);
+		return Response.ok(String.valueOf(count)).build();
 	}
 
 	@POST
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public void newUser(@FormParam("id") String id, @FormParam("password") String password, @FormParam("name") String name, @FormParam("mail") String mail,
+	public Response newUser(@FormParam("id") String id, @FormParam("password") String password, @FormParam("name") String name, @FormParam("mail") String mail,
 			@FormParam("country") String country, @FormParam("state") String state, @FormParam("town") String town,
 			@Context HttpServletResponse servletResponse) throws IOException {
+		/*
+		 * Check if ID already exists
+		 */
+		if(UserStorage.instance.getModel().containsKey(id)){
+			servletResponse.sendRedirect("../create_user.html");
+			return Response.status(Status.BAD_REQUEST).build();
+		}
 		/*
 		 * Create user instance
 		 */
@@ -210,7 +219,8 @@ public class UsersResource {
 		 */
 		Authenticator authenticator = Authenticator.getInstance();
 		authenticator.create(id, password);
-		servletResponse.sendRedirect("../create_user.html");
+		servletResponse.sendRedirect("../rest/users");
+		return Response.created(URI.create("http://localhost:8080/boardgamemanager/rest/users/"+id)).build();
 	}
 
 	@Path("{user}")
@@ -267,11 +277,64 @@ public class UsersResource {
 		if (order.equals("desc")) {
 			Collections.reverse(plays);
 		}
+		
+		return Response.ok(plays).build();
+	}
+
+	@GET
+	@Path("{user}/plays")
+	@Produces(MediaType.TEXT_HTML)
+	public Response showPlaysBrowser(@PathParam("user") String id, @DefaultValue("") @QueryParam("date") String date,
+			@DefaultValue("") @QueryParam("game") String game,
+			@DefaultValue("id") @QueryParam("orderby") String orderby,
+			@DefaultValue("asc") @QueryParam("order") String order) {
+		List<Play> plays = new ArrayList<Play>();
+		Iterator<Play> it = PlayStorage.instance.getModel().values().iterator();
+		while (it.hasNext()) {
+			Play p = it.next();
+			if (p.getUserId().equals(id)) {
+				plays.add(p);
+			}
+		}
+		// filter
+		if (!date.equals("")) {
+			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			Date dateD;
+			try {
+				dateD = df.parse(date);
+				plays.removeIf(p -> !p.getDate().equals(dateD));
+			} catch (ParseException e) {
+				// do nothing if date is not valid
+			}
+		}
+		if (!game.equals("")) {
+			plays.removeIf(p -> !p.getGameId().equals(game));
+		}
+
+		// order
+		if (!orderby.equals("") || !orderby.equals("id")) {
+			Comparator<Play> comp = (Play a, Play b) -> a.getId().compareTo(b.getId());
+			switch (orderby) {
+			case "date":
+				comp = (Play a, Play b) -> a.getDate().compareTo(b.getDate());
+				break;
+
+			case "game":
+				comp = (Play a, Play b) -> a.getGameId().compareTo(b.getGameId());
+				break;
+			}
+			Collections.sort(plays, comp);
+		}
+
+		// if descending
+		if (order.equals("desc")) {
+			Collections.reverse(plays);
+		}
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("plays", plays);
 		
 		return Response.ok(new Viewable("/play_list", map)).build();
 	}
-
+	
 }

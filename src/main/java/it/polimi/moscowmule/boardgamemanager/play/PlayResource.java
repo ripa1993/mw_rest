@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -27,22 +26,14 @@ public class PlayResource {
 		this.id = id;
 	}
 	
-	@Path("/ciao/prova")
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public String prova(){
-		return "FUNZIONA";
-	}
-	
-	
 	// app
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Play getPlay() {
+	public Response getPlay() {
 		Play play = PlayStorage.instance.getModel().get(id);
 		if (play == null)
 			throw new RuntimeException("Get: Play with " + id + " not found");
-		return play;
+		return Response.ok(play).build();
 	}
 	
 	@GET

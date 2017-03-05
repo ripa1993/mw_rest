@@ -30,11 +30,11 @@ public class UserResource {
 	// application
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public User getUser() {
+	public Response getUser() {
 		User user = UserStorage.instance.getModel().get(id);
 		if (user == null)
 			throw new RuntimeException("Get: User with " + id + " not found");
-		return user;
+		return Response.ok(user).build();
 	}
 
 	// browser

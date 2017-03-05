@@ -1,6 +1,7 @@
 package it.polimi.moscowmule.boardgamemanager.play;
 
 import java.io.IOException;
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.server.mvc.Viewable;
@@ -39,10 +41,10 @@ public class PlaysResource {
 	// app
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<Play> getPlays() {
+	public Response getPlays() {
 		List<Play> plays = new ArrayList<Play>();
 		plays.addAll(PlayStorage.instance.getModel().values());
-		return plays;
+		return Response.ok(plays).build();
 	}
 
 	// browser
@@ -59,15 +61,16 @@ public class PlaysResource {
 	@GET
 	@Path("count")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String getCount() {
+	public Response getCount() {
 		int count = PlayStorage.instance.getModel().size();
-		return String.valueOf(count);
+		return Response.ok(String.valueOf(count)).build();
 	}
 
+	// TODO: id should not be passed as an argument but generated
 	@POST
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public void newPlay(@FormParam("id") String id,
+	public Response newPlay(@FormParam("id") String id,
 						@FormParam("userId") String userId,
 						@FormParam("gameId") String gameId,
 						@FormParam("date") String date,
@@ -94,7 +97,9 @@ public class PlaysResource {
 				play.setWinnerId(winnerId);
 			}
 			servletResponse.sendRedirect("../create_play.html");
+			return Response.created(URI.create("http://localhost:8080/boardgamemanager/rest/plays/"+id)).build();
 		}
+		return Response.status(Status.BAD_REQUEST).build();
 	}
 	
 	

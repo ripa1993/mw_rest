@@ -29,11 +29,11 @@ public class GameResource {
 	// application
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Game getGame() {
+	public Response getGame() {
 		Game game = GameStorage.instance.getModel().get(id);
 		if (game == null)
 			throw new RuntimeException("Get: Game with " + id + " not found");
-		return game;
+		return Response.ok(game).build();
 	}
 
 	// browser
