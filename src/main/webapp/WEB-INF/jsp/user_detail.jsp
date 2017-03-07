@@ -5,19 +5,33 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>User: ${it.user.id}</title>
+<jsp:include page="/WEB-INF/jsp/includes.jsp" />
+
 </head>
 <body>
 	<jsp:include page="header.jsp">
 		<jsp:param name="title" value="User" />
 	</jsp:include>
-	<div>
-		<ul>
-			<li>Name: ${it.user.name }
-			<li>Country: ${it.user.country }
-			<li>State: ${it.user.state }
-			<li>Town: ${it.user.town }
-			<li><a href="${it.user.playsUri }">Plays</a>
-		</ul>
+	<div class="page-header">
+		<h4>User ${it.user.id} details</h4>
+	</div>
+	<div class="row">
+		<div class="col-md-4">
+			<a class="btn btn-default" href="${it.user.playsUri }" role="button">Show
+				plays</a>
+		</div>
+		<div class="col-md-8">
+			<dl class="dl-horizontal">
+				<dt>Name</dt>
+				<dd>${it.user.name }</dd>
+				<dt>Country</dt>
+				<dd>${it.user.country }</dd>
+				<dt>State</dt>
+				<dd>${it.user.state }</dd>
+				<dt>Town</dt>
+				<dd>${it.user.town }</dd>
+			</dl>
+		</div>
 	</div>
 	<jsp:include page="footer.jsp" />
 

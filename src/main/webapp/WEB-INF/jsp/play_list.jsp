@@ -6,19 +6,27 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Play list</title>
+<jsp:include page="/WEB-INF/jsp/includes.jsp" />
+
 </head>
 <body>
 	<jsp:include page="header.jsp">
-		<jsp:param name="title" value="Play List" />
+		<jsp:param name="title" value="plays" />
 	</jsp:include>
-	<div id="plays">
-		<c:forEach var="play" items="${it.plays}">
-			<div class="play">
-				<a href="${play.uri}">Created by user ${play.userId } on game
-					${play.gameId } on ${play.date }</a>
-			</div>
-		</c:forEach>
+
+
+	<div class="panel panel-default">
+		<div class="panel-heading">Plays list</div>
+
+		<div id="games" class="list-group">
+			<c:forEach var="play" items="${it.plays}">
+				<a href="${play.uri}" class="list-group-item">Created by user
+					${play.userId } on game ${play.gameId } on ${play.date }</a>
+			</c:forEach>
+		</div>
 	</div>
+
+
 	<jsp:include page="footer.jsp" />
 
 </body>

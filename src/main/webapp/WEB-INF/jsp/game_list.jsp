@@ -6,23 +6,24 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Games list</title>
+<jsp:include page="/WEB-INF/jsp/includes.jsp" />
+
 </head>
 <body>
 	<jsp:include page="header.jsp">
-		<jsp:param name="title" value="Game list" />
+		<jsp:param name="title" value="games" />
 	</jsp:include>
 
-	<div id="menu">
-		<a href="http://localhost:8080/boardgamemanager/create_game.html">--New
-			Game--</a>
+
+	<div class="panel panel-default">
+		<div class="panel-heading">Games list</div>
+		
+		<div id="games" class="list-group">
+			<c:forEach var="game" items="${it.games}">
+				<a href="${game.uri}" class="list-group-item">${game.name }</a>
+			</c:forEach>
+		</div>
 	</div>
 
-	<div id="games">
-		<c:forEach var="game" items="${it.games}">
-			<div class="game">
-				<a href="${game.uri}">${game.name }</a>
-			</div>
-		</c:forEach>
-	</div>
 	<jsp:include page="footer.jsp" /></body>
 </html>
