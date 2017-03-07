@@ -17,8 +17,7 @@
 
 	<div class="row">
 		<div class="col-md-4">
-			<img src="${it.game.coverArt}" alt="Cover art" height:
-				auto; class="img-thumbnail" />
+			<img src="${it.game.coverArt}" alt="Cover art" height="auto" class="img-thumbnail" />
 		</div>
 		<div class="col-md-8">
 			<dl class="dl-horizontal">

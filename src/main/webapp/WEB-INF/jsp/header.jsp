@@ -1,4 +1,37 @@
+<%@page
+	import="it.polimi.moscowmule.boardgamemanager.authentication.Authenticator"%>
+<%@ page import="java.util.*"%>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<%
+	String authToken = null;
+	Cookie cookie = null;
+	Cookie[] cookies = null;
+	// Get an array of Cookies associated with this domain
+	cookies = request.getCookies();
+	if (cookies != null) {
+		for (int i = 0; i < cookies.length; i++) {
+			cookie = cookies[i];
+			if (cookie.getName().equals("auth_token")) {
+				authToken = cookie.getValue();
+			}
+		}
+	}
+	// export auth_token
+	pageContext.setAttribute("auth_token", authToken);
+
+	boolean validToken = Authenticator.getInstance().isAuthTokenValid(authToken);
+	pageContext.setAttribute("valid_token", validToken);
+
+	String username = Authenticator.getInstance().getUserFromToken(authToken);
+	pageContext.setAttribute("username", username);
+%>
+
+<form id="logoutForm" action="http://localhost:8080/boardgamemanager/rest/logout" method="POST" style="display: none">
+	
+</form>
+
 
 <nav class="navbar navbar-default">
 	<div class="container-fluid">
@@ -11,7 +44,6 @@
 					class="icon-bar"></span> <span class="icon-bar"></span> <span
 					class="icon-bar"></span>
 			</button>
-			<!-- <a class="navbar-brand" href="#"><c:out value="${param.title}" /></a> -->
 			<a class="navbar-brand"
 				href="http://localhost:8080/boardgamemanager/">Boardgame Manager</a>
 		</div>
@@ -52,25 +84,33 @@
 				<a href="http://localhost:8080/boardgamemanager/rest/plays">Plays</a>
 				</li>
 			</ul>
-			<!-- TODO: mettere active solo per la pagina corrente -->
 
 			<ul class="nav navbar-nav navbar-right">
+				<c:if test="${valid_token }">
+					<li><p class="navbar-text">Signed in as ${username }</p></li>
+				</c:if>
 				<li class="dropdown"><a href="#" class="dropdown-toggle"
 					data-toggle="dropdown" role="button" aria-haspopup="true"
 					aria-expanded="false">Menu <span class="caret"></span></a>
 					<ul class="dropdown-menu">
-						<li><a
-							href="http://localhost:8080/boardgamemanager/create_game.html">New
-								Game</a></li>
-						<li><a
-							href="http://localhost:8080/boardgamemanager/create_play.html">New
-								Play</a></li>
-						<li role="separator" class="divider"></li>
-						<li><a
-							href="http://localhost:8080/boardgamemanager/login.jsp">Login</a></li>
-						<li><a href="#">Logout</a></li>
-						<li><a
-							href="http://localhost:8080/boardgamemanager/register.jsp">Register</a></li>
+						<c:if test="${valid_token }">
+							<li><a
+								href="http://localhost:8080/boardgamemanager/create_game.html">New
+									Game</a></li>
+							<li><a
+								href="http://localhost:8080/boardgamemanager/create_play.html">New
+									Play</a></li>
+							<li role="separator" class="divider"></li>
+
+							<li><a href="" onclick="$('#logoutForm').submit(); return false;">Logout</a></li>
+						</c:if>
+						<c:if test="${! valid_token }">
+							<li><a
+								href="http://localhost:8080/boardgamemanager/login.jsp">Login</a></li>
+							<li><a
+								href="http://localhost:8080/boardgamemanager/register.jsp">Register</a></li>
+						</c:if>
+
 					</ul></li>
 			</ul>
 

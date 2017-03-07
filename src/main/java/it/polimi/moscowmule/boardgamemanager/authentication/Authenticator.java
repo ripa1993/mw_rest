@@ -97,4 +97,11 @@ public class Authenticator {
 	public void create(String id, String password) {
 		usersStorage.put(id, password);
 	}
+	
+	/*
+	 * Returns a user or NULL
+	 */
+	public String getUserFromToken(String auth_token){
+		return authorizationTokensStorage.get(auth_token);
+	}
 }

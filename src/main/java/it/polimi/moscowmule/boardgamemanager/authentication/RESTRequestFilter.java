@@ -1,11 +1,13 @@
 package it.polimi.moscowmule.boardgamemanager.authentication;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
@@ -28,19 +30,24 @@ public class RESTRequestFilter implements ContainerRequestFilter {
 
 		Authenticator authenticator = Authenticator.getInstance();
 		String authToken = requestContext.getHeaderString(HTTPHeaderNames.AUTH_TOKEN);
-		
-		log.info("auth_token="+authToken);
-		
+		if (authToken == null) {
+			Map<String, Cookie> cookies = requestContext.getCookies();
+			if (cookies.containsKey(HTTPHeaderNames.AUTH_TOKEN)) {
+				authToken = requestContext.getCookies().get(HTTPHeaderNames.AUTH_TOKEN).getValue();
+			}
+		}
+		log.info("auth_token=" + authToken);
+
 		/*
 		 * Allow creation of content to power users only
 		 */
 
 		if (requestContext.getMethod().equals("POST")) {
 			// if there's a POST request
-			if (path.startsWith("users")){
+			if (path.startsWith("users")) {
 				// everyone can create users, this to allow new user to register
 				return;
-			}	
+			}
 			if (!path.startsWith("login")) {
 				// and it is not about "login"
 				if (!authenticator.isAuthTokenValid(authToken)) {
@@ -48,7 +55,8 @@ public class RESTRequestFilter implements ContainerRequestFilter {
 					log.info("Not authorized token");
 					requestContext.abortWith(Response.status(Status.UNAUTHORIZED).build());
 				} else {
-					// if the token is valid, but it doesn't belong to a poweruser
+					// if the token is valid, but it doesn't belong to a
+					// poweruser
 					if (!authenticator.isPowerUserToken(authToken)) {
 						log.info("Not power user token");
 						requestContext.abortWith(Response.status(Status.UNAUTHORIZED).build());
