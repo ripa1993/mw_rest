@@ -85,7 +85,7 @@ public class UsersResource {
 
 		// order
 		if (!orderby.equals("") || !orderby.equals("id")) {
-			Comparator<User> comp = (User a, User b) -> a.getId().compareTo(b.getId());
+			Comparator<User> comp;
 			switch (orderby) {
 			case "name":
 				comp = (User a, User b) -> a.getName().compareTo(b.getName());
@@ -101,6 +101,9 @@ public class UsersResource {
 
 			case "town":
 				comp = (User a, User b) -> a.getTown().compareTo(b.getTown());
+				break;
+			default:
+				comp = (User a, User b) -> a.getId().compareTo(b.getId());
 				break;
 			}
 			Collections.sort(users, comp);
