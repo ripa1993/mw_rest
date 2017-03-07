@@ -95,10 +95,10 @@
 					<ul class="dropdown-menu">
 						<c:if test="${valid_token }">
 							<li><a
-								href="http://localhost:8080/boardgamemanager/create_game.html">New
+								href="http://localhost:8080/boardgamemanager/create_game.jsp">New
 									Game</a></li>
 							<li><a
-								href="http://localhost:8080/boardgamemanager/create_play.html">New
+								href="http://localhost:8080/boardgamemanager/create_play.jsp">New
 									Play</a></li>
 							<li role="separator" class="divider"></li>
 
