@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 @Path("/img")
 public class ImagesResource {
 	private static final String FOLDER = "C://boardgamemanager//img//";
-	
+	private static final String MISSING = FOLDER+"missing.jpg";
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getContent(){
@@ -34,7 +34,10 @@ public class ImagesResource {
 			builder.header("Content-Disposition", "attachment; filename=" + file.getName());
 			response = builder.build();
 		} else {
-			response = Response.status(404).entity("FILE NOT FOUND: "+fileLocation).build();
+			file = new File(MISSING);
+			javax.ws.rs.core.Response.ResponseBuilder builder = Response.status(404).entity(file);
+			builder.header("Content-Disposition", "attachment; filename=" + file.getName());
+			response = builder.build();
 		}
 		
 		return response;
