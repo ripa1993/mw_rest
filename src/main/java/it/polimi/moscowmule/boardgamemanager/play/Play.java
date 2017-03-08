@@ -6,8 +6,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement
-@XmlType(propOrder={"id", "userId", "gameId", "date", "timeToComplete", "numPlayers", "winnerId", "uri", "userUri", "gameUri", "winnerUri"})
+@XmlType(propOrder = { "id", "userId", "gameId", "date", "timeToComplete", "numPlayers", "winnerId", "uri", "userUri",
+		"gameUri", "winnerUri" })
 public class Play {
+
+	private static Integer counter = 1;
+
 	private String id;
 	private String userId;
 	private String gameId;
@@ -24,14 +28,17 @@ public class Play {
 
 	}
 
-	public Play(String id, String userId, String gameId, Date date) {
-		this.setId(id);
+	public Play(String userId, String gameId, Date date) {
+		synchronized (Play.counter) {
+			this.id = counter.toString();
+			counter++;
+		}
 		this.userId = userId;
 		this.gameId = gameId;
 		this.date = date;
-		this.setUri("http://localhost:8080/boardgamemanager/rest/plays/"+id);
-		this.setUserUri("http://localhost:8080/boardgamemanager/rest/users/"+userId);
-		this.setGameUri("http://localhost:8080/boardgamemanager/rest/games/"+gameId);
+		this.setUri("http://localhost:8080/boardgamemanager/rest/plays/" + id);
+		this.setUserUri("http://localhost:8080/boardgamemanager/rest/users/" + userId);
+		this.setGameUri("http://localhost:8080/boardgamemanager/rest/games/" + gameId);
 
 	}
 
@@ -89,7 +96,7 @@ public class Play {
 
 	public void setWinnerId(String winnerId) {
 		this.winnerId = winnerId;
-		this.setWinnerUri("http://localhost:8080/boardgamemanager/rest/users/"+winnerId);
+		this.setWinnerUri("http://localhost:8080/boardgamemanager/rest/users/" + winnerId);
 	}
 
 	public String getUri() {

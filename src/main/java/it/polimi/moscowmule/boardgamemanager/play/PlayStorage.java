@@ -10,7 +10,7 @@ public enum PlayStorage {
 	private Map<String, Play> contentProvider = new HashMap<>();
 	
 	private PlayStorage(){
-		Play play = new Play("1", "1", "1", new Date());
+		Play play = new Play("1", "1", new Date());
 		contentProvider.put("1", play);
 	}
 	

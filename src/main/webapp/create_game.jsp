@@ -18,13 +18,7 @@
 	<div class="container">
 		<form class="form-horizontal" action="../boardgamemanager/rest/games"
 			method="POST" enctype="multipart/form-data">
-			<div class="form-group">
-				<label for="id" class="col-sm-2 control-label">ID</label>
-				<div class="col-sm-10">
-					<input type="text" class="form-control" name="id"
-						placeholder="Game ID">
-				</div>
-			</div>
+
 			<div class="form-group">
 				<label for="name" class="col-sm-2 control-label">Name</label>
 				<div class="col-sm-10">

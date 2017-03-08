@@ -26,7 +26,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -223,25 +222,23 @@ public class GamesResource {
 	@POST
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response newGame(@FormDataParam("id") String id, @FormDataParam("name") String name,
+	public Response newGame(@FormDataParam("name") String name,
 			@FormDataParam("minPlayers") String minPlayers, @FormDataParam("maxPlayers") String maxPlayers,
 			@FormDataParam("playTime") String playTime, @FormDataParam("minAge") String minAge,
 			@FormDataParam("difficulty") String difficulty, @FormDataParam("designer") String designer,
 			@FormDataParam("artist") String artist, @FormDataParam("publisher") String publisher,
 			@FormDataParam("file") InputStream file, @FormDataParam("file") FormDataContentDisposition header,
 			@Context HttpServletResponse servletResponse) throws IOException {
-		/*
-		 * Check if id is already used
-		 */
-		if (GameStorage.instance.getModel().containsKey(id)){
-			return Response.status(Status.BAD_REQUEST).build();
-		}
+
 		
 		/*
 		 * Create new game
 		 */
-		Game game = new Game(id, name);
-		GameStorage.instance.getModel().put(id, game);
+		Game game = new Game(name);
+		
+		// obtain id of new game
+		String id = game.getId();
+		
 		if (minPlayers != null) {
 			game.setMinPlayers(Integer.valueOf(minPlayers));
 		}
@@ -267,7 +264,14 @@ public class GamesResource {
 			game.setPublisher(publisher);
 		}
 
-		// handle the image
+		/*
+		 * If all checks are successful add the game to the storage
+		 */
+		GameStorage.instance.getModel().put(id, game);
+
+		/*
+		 * Handle the image
+		 */
 
 		FileOutputStream os = FileUtils.openOutputStream(new File("C://boardgamemanager//img//" + id + ".jpg"));
 
@@ -280,9 +284,10 @@ public class GamesResource {
 		os.flush();
 		os.close();
 		file.close();
-		game.setCoverArt("http://localhost:8080/boardgameamanger/rest/img/" + id);
+		
+//		game.setCoverArt("http://localhost:8080/boardgameamanger/rest/img/" + id);
 
-		servletResponse.sendRedirect("../create_game.html");
+		servletResponse.sendRedirect(game.getUri());
 		return Response.created(URI.create("http://localhost:8080/boardgameamanger/rest/games/"+id)).build();
 	}
 

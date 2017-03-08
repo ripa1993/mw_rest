@@ -66,11 +66,10 @@ public class PlaysResource {
 		return Response.ok(String.valueOf(count)).build();
 	}
 
-	// TODO: id should not be passed as an argument but generated
 	@POST
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response newPlay(@FormParam("id") String id,
+	public Response newPlay(
 						@FormParam("userId") String userId,
 						@FormParam("gameId") String gameId,
 						@FormParam("date") String date,
@@ -86,7 +85,7 @@ public class PlaysResource {
 			} catch (ParseException e) {
 				d = new Date();
 			}
-			Play play = new Play(id, userId, gameId, d);
+			Play play = new Play(userId, gameId, d);
 			if(timeToComplete!=null){
 				play.setTimeToComplete(Integer.valueOf(timeToComplete));
 			}
@@ -96,8 +95,11 @@ public class PlaysResource {
 			if(UserStorage.instance.getModel().containsKey(winnerId)){
 				play.setWinnerId(winnerId);
 			}
-			servletResponse.sendRedirect("../create_play.html");
-			return Response.created(URI.create("http://localhost:8080/boardgamemanager/rest/plays/"+id)).build();
+			
+			PlayStorage.instance.getModel().put(play.getId(), play);
+			
+			servletResponse.sendRedirect(play.getUri());
+			return Response.created(URI.create(play.getUri())).build();
 		}
 		return Response.status(Status.BAD_REQUEST).build();
 	}

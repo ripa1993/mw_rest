@@ -7,6 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = { "id", "name", "minPlayers", "maxPlayers", "playTime", "minAge", "difficulty", "designer",
 		"artist", "publisher", "coverArt", "uri" })
 public class Game {
+	
+	private static Integer counter = 1;
+	
 	private String id;
 	private String name;
 	private int minPlayers;
@@ -24,8 +27,11 @@ public class Game {
 
 	}
 
-	public Game(String id, String name) {
-		this.id = id;
+	public Game(String name) {
+		synchronized(Game.counter){
+			this.id = counter.toString();
+			counter++;
+		}
 		this.name = name;
 		this.uri = "http://localhost:8080/boardgamemanager/rest/games/"+id;
 		this.coverArt = "http://localhost:8080/boardgamemanager/rest/img/"+id+".jpg";

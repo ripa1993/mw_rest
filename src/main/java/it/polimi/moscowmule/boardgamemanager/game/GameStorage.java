@@ -9,9 +9,9 @@ public enum GameStorage {
 	private Map<String, Game> contentProvider = new HashMap<>();
 	
 	private GameStorage(){
-		Game game = new Game("1", "Risk");
+		Game game = new Game("Risk");
 		contentProvider.put("1", game);
-		Game game2 = new Game("2", "Terra Mystica: Gaia Project");
+		Game game2 = new Game("Terra Mystica: Gaia Project");
 		game2.setMinPlayers(1);
 		game2.setMaxPlayers(4);
 		game2.setPlayTime(60);
