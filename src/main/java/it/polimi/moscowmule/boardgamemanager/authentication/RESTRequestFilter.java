@@ -48,6 +48,10 @@ public class RESTRequestFilter implements ContainerRequestFilter {
 				// everyone can create users, this to allow new user to register
 				return;
 			}
+			if (path.startsWith("plays")){
+				// TODO: implement authorization
+				return;
+			}
 			if (!path.startsWith("login")) {
 				// and it is not about "login"
 				if (!authenticator.isAuthTokenValid(authToken)) {
