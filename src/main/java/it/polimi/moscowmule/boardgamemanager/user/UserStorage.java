@@ -10,16 +10,22 @@ public enum UserStorage {
 	private Map<String, User> contentProvider = new HashMap<>();
 
 	private UserStorage() {
-		User user = new User("1", "Simone");
+		User user = new User("ripa1993", "Simone");
 		user.setCountry("Italy");
 		user.setState("CO");
 		user.setTown("Guanzate");
 		user.setMail("simone@mail.com");
-		contentProvider.put("1", user);
-		User user2 = new User("2", "Luca");
-		contentProvider.put("2", user2);
-		User user3 = new User("3", "Riccardo");
-		contentProvider.put("3", user3);
+		contentProvider.put(user.getId(), user);
+		User user2 = new User("storna", "Luca");
+		user2.setCountry("Italy");
+		user2.setState("BG");
+		user2.setTown("Villa d'Adda");
+		user2.setMail("storna@polimi.it");
+		contentProvider.put(user2.getId(), user2);
+		User user3 = new User("rpressiani", "Riccardo");
+		user3.setCountry("Italy");
+		user3.setMail("rpressiani@example.com");
+		contentProvider.put(user3.getId(), user3);
 	}
 
 	public Map<String, User> getModel() {

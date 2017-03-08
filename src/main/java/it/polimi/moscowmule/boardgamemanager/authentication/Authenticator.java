@@ -21,11 +21,11 @@ public class Authenticator {
 
 	private Authenticator() {
 		// usersStorage
-		usersStorage.put("1", "password");
-		usersStorage.put("2", "password");
-		usersStorage.put("3", "password");
+		usersStorage.put("ripa1993", "password");
+		usersStorage.put("storna", "password");
+		usersStorage.put("rpressiani", "password");
 
-		powerUsers.add("1");
+		powerUsers.add("ripa1993");
 	}
 
 	public static Authenticator getInstance() {
