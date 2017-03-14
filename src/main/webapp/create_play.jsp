@@ -18,13 +18,13 @@
 	<div class="container">
 		<form class="form-horizontal" action="../boardgamemanager/rest/plays" method="POST">
 
-			<div class="form-group">
+			<!-- <div class="form-group">
 				<label for="userId" class="col-sm-2 control-label">User</label>
 				<div class="col-sm-10">
 					<input type="text" class="form-control" name="userId"
 						placeholder="Pippo">
 				</div>
-			</div>
+			</div> -->
 			<div class="form-group">
 				<label for="gameId" class="col-sm-2 control-label">Game</label>
 				<div class="col-sm-10">

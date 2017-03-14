@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -20,6 +21,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
@@ -28,6 +30,8 @@ import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.server.mvc.Viewable;
 
+import it.polimi.moscowmule.boardgamemanager.authentication.Authenticator;
+import it.polimi.moscowmule.boardgamemanager.authentication.HTTPHeaderNames;
 import it.polimi.moscowmule.boardgamemanager.game.GameStorage;
 import it.polimi.moscowmule.boardgamemanager.user.UserStorage;
 
@@ -70,13 +74,25 @@ public class PlaysResource {
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public Response newPlay(
-						@FormParam("userId") String userId,
+						//@FormParam("userId") String userId,
 						@FormParam("gameId") String gameId,
 						@FormParam("date") String date,
 						@FormParam("timeToComplete") String timeToComplete,
 						@FormParam("numPlayers") String numPlayers,
 						@FormParam("winnerId") String winnerId,
-						@Context HttpServletResponse servletResponse) throws IOException{
+						@Context HttpServletResponse servletResponse,
+						@Context HttpServletRequest servletRequest) throws IOException{
+		String authToken = servletRequest.getHeader(HTTPHeaderNames.AUTH_TOKEN);
+		if(authToken == null){
+			javax.servlet.http.Cookie[] cookies = servletRequest.getCookies();
+			for (javax.servlet.http.Cookie c: cookies){
+				if(c.getName().equals(HTTPHeaderNames.AUTH_TOKEN)){
+					authToken = c.getValue();
+				}
+			}
+		}
+		String userId = Authenticator.getInstance().getUserFromToken(authToken);
+		
 		if(UserStorage.instance.getModel().containsKey(userId) && GameStorage.instance.getModel().containsKey(gameId)){
 			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 			Date d;
