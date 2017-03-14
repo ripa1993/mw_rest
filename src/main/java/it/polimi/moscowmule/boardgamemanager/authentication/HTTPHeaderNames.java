@@ -5,4 +5,5 @@ package it.polimi.moscowmule.boardgamemanager.authentication;
  */
 public interface HTTPHeaderNames {
 	public static final String AUTH_TOKEN = "auth_token";
+	public static final String APPLICATION_KEY = "application_key";
 }

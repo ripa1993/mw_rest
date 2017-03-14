@@ -23,10 +23,10 @@ public class RESTResponseFilter implements ContainerResponseFilter {
 	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
 			throws IOException {
 		log.info("Filtering REST Response");
-		
-		responseContext.getHeaders().add( "Access-Control-Allow-Origin", "*" ); 
+
+		responseContext.getHeaders().add( "Access-Control-Allow-Origin", "*" );
         responseContext.getHeaders().add( "Access-Control-Allow-Credentials", "true" );
-        responseContext.getHeaders().add( "Access-Control-Allow-Methods", "GET, POST, DELETE, PUT" );
-        responseContext.getHeaders().add( "Access-Control-Allow-Headers", HTTPHeaderNames.AUTH_TOKEN );	}
+        responseContext.getHeaders().add( "Access-Control-Allow-Methods", "GET, POST" );
+        responseContext.getHeaders().add( "Access-Control-Allow-Headers", HTTPHeaderNames.AUTH_TOKEN + ", "+HTTPHeaderNames.APPLICATION_KEY);	}
 
 }

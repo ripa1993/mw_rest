@@ -20,6 +20,15 @@ public class RESTRequestFilter implements ContainerRequestFilter {
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
+		
+		String applicationKey = requestContext.getHeaderString(HTTPHeaderNames.APPLICATION_KEY);
+		log.info("application_key="+applicationKey);
+		if(!Authenticator.getInstance().isApplicationKeyValid(applicationKey)){
+			log.info("Application key doesn't match a recognized application");
+			requestContext.abortWith(Response.status(Status.UNAUTHORIZED).build());
+		}
+		
+		
 		String path = requestContext.getUriInfo().getPath();
 		log.info("Filtering request path: " + path);
 

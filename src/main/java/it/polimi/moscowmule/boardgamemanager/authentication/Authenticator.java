@@ -11,6 +11,9 @@ import javax.security.auth.login.LoginException;
 
 public class Authenticator {
 	private static Authenticator authenticator = null;
+	
+	// Contains authorized appplication keys
+	private final List<String> applicationKeys = new ArrayList<String>();
 
 	// Stores <username, password>
 	private final Map<String, String> usersStorage = new HashMap<String, String>();
@@ -26,6 +29,8 @@ public class Authenticator {
 		usersStorage.put("rpressiani", "password");
 
 		powerUsers.add("ripa1993");
+		
+		applicationKeys.add("web");
 	}
 
 	public static Authenticator getInstance() {
@@ -103,5 +108,12 @@ public class Authenticator {
 	 */
 	public String getUserFromToken(String auth_token){
 		return authorizationTokensStorage.get(auth_token);
+	}
+	
+	/*
+	 * Check if application key is of a valid application
+	 */
+	public boolean isApplicationKeyValid(String key){
+		return applicationKeys.contains(key);
 	}
 }
