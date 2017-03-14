@@ -23,7 +23,10 @@ public class User {
 		this.name = name;
 		this.uri = "http://localhost:8080/boardgamemanager/rest/users/"+id;
 		this.setPlaysUri("http://localhost:8080/boardgamemanager/rest/users/"+id+"/plays");
-
+		this.country = "N/A";
+		this.state = "N/A";
+		this.town = "N/A";
+		this.mail = "N/A";
 	}
 
 	public String getId() {

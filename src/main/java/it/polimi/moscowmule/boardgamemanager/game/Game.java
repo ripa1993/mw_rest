@@ -35,6 +35,14 @@ public class Game {
 		this.name = name;
 		this.uri = "http://localhost:8080/boardgamemanager/rest/games/"+id;
 		this.coverArt = "http://localhost:8080/boardgamemanager/rest/img/"+id+".jpg";
+		this.minPlayers = 0;
+		this.maxPlayers = 99;
+		this.playTime = 0;
+		this.minAge = 0;
+		this.difficulty = 0f;
+		this.designer="";
+		this.artist="";
+		this.publisher="";
 	}
 
 	public String getId() {
