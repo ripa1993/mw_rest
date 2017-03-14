@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -39,45 +40,82 @@ public class GamesResource {
 	@Context
 	Request request;
 
+	private final static Logger log = Logger.getLogger(GamesResource.class.getName());
+
 	// application
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response getGames(@DefaultValue("") @QueryParam("filter") String filter,
-			@DefaultValue("") @QueryParam("value") String value,
+	public Response getGames(@DefaultValue("") @QueryParam("name") String name,
+			@DefaultValue("") @QueryParam("players") String players, @DefaultValue("") @QueryParam("time") String time,
+			@DefaultValue("") @QueryParam("age") String age,
+			@DefaultValue("") @QueryParam("difficulty") String difficulty,
+			@DefaultValue("") @QueryParam("designer") String designer,
+			@DefaultValue("") @QueryParam("artist") String artist,
+			@DefaultValue("") @QueryParam("publisher") String publisher,
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
 		// add all games
 		List<Game> games = new ArrayList<Game>();
 		games.addAll(GameStorage.instance.getModel().values());
 
-		if (!value.equals("")) {
-			switch (filter) {
-			case "name":
-				games.removeIf(g -> !g.getName().contains(value));
-				break;
-			case "players":
-				games.removeIf(g -> !(g.getMaxPlayers() > Integer.valueOf(value))
-						|| !(g.getMinPlayers() < Integer.valueOf(value)));
-				break;
-			case "playTime":
-				games.removeIf(g -> g.getPlayTime() > Integer.valueOf(value));
-				break;
-			case "age":
-				games.removeIf(g -> g.getMinAge() < Integer.valueOf(value));
-				break;
-			case "difficulty":
-				games.removeIf(g -> g.getDifficulty() > Integer.valueOf(value));
-				break;
-			case "designer":
-				games.removeIf(g -> !g.getDesigner().contains(value));
-				break;
-			case "artist":
-				games.removeIf(g -> !g.getArtist().contains(value));
-				break;
-			case "publisher":
-				games.removeIf(g -> !g.getPublisher().contains(value));
-				break;
+		if (!name.equals("")) {
+			log.info("Filtering name");
+			games.removeIf(g -> !g.getName().contains(name));
+		}
+		if (!players.equals("")) {
+			log.info("Filtering players");
+			try {
+				int p = Integer.valueOf(players);
+
+				games.removeIf(g -> p > g.getMaxPlayers());
+
+				games.removeIf(g -> p < g.getMinPlayers());
+
+			} catch (NumberFormatException e) {
+				// do nothing :)
 			}
+		}
+
+		if (!time.equals("")) {
+			log.info("Filtering time");
+			try {
+				int t = Integer.valueOf(time);
+				games.removeIf(g -> g.getPlayTime() > t);
+
+			} catch (NumberFormatException e) {
+				//
+			}
+		}
+
+		if (!age.equals("")) {
+			log.info("Filtering age");
+			try {
+				int a = Integer.valueOf(age);
+				games.removeIf(g -> g.getMinAge() < a);
+			} catch (NumberFormatException e) {
+				// donothing
+			}
+		}
+		if (!difficulty.equals("")) {
+			log.info("Filtering difficulty");
+			try {
+				float d = Float.valueOf(difficulty);
+				games.removeIf(g -> g.getDifficulty() > d);
+			} catch (NumberFormatException e) {
+				// nothing
+			}
+		}
+
+		if (!designer.equals("")) {
+			games.removeIf(g -> !g.getDesigner().contains(designer));
+		}
+
+		if (!artist.equals("")) {
+			games.removeIf(g -> !g.getArtist().contains(artist));
+
+		}
+		if (!publisher.equals("")) {
+			games.removeIf(g -> !g.getPublisher().contains(publisher));
 		}
 
 		// order
@@ -126,42 +164,77 @@ public class GamesResource {
 	// browser
 	@GET
 	@Produces(MediaType.TEXT_HTML)
-	public Response getGamesBrowser(@DefaultValue("") @QueryParam("filter") String filter,
-			@DefaultValue("") @QueryParam("value") String value,
+	public Response getGamesBrowser(@DefaultValue("") @QueryParam("name") String name,
+			@DefaultValue("") @QueryParam("players") String players, @DefaultValue("") @QueryParam("time") String time,
+			@DefaultValue("") @QueryParam("age") String age,
+			@DefaultValue("") @QueryParam("difficulty") String difficulty,
+			@DefaultValue("") @QueryParam("designer") String designer,
+			@DefaultValue("") @QueryParam("artist") String artist,
+			@DefaultValue("") @QueryParam("publisher") String publisher,
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
 		// add all games
 		List<Game> games = new ArrayList<Game>();
 		games.addAll(GameStorage.instance.getModel().values());
 
-		if (!value.equals("")) {
-			switch (filter) {
-			case "name":
-				games.removeIf(g -> !g.getName().contains(value));
-				break;
-			case "players":
-				games.removeIf(g -> !(g.getMaxPlayers() > Integer.valueOf(value))
-						|| !(g.getMinPlayers() < Integer.valueOf(value)));
-				break;
-			case "playTime":
-				games.removeIf(g -> g.getPlayTime() > Integer.valueOf(value));
-				break;
-			case "age":
-				games.removeIf(g -> g.getMinAge() < Integer.valueOf(value));
-				break;
-			case "difficulty":
-				games.removeIf(g -> g.getDifficulty() > Integer.valueOf(value));
-				break;
-			case "designer":
-				games.removeIf(g -> !g.getDesigner().contains(value));
-				break;
-			case "artist":
-				games.removeIf(g -> !g.getArtist().contains(value));
-				break;
-			case "publisher":
-				games.removeIf(g -> !g.getPublisher().contains(value));
-				break;
+		if (!name.equals("")) {
+			log.info("Filtering name");
+			games.removeIf(g -> !g.getName().contains(name));
+		}
+		if (!players.equals("")) {
+			log.info("Filtering players");
+			try {
+				int p = Integer.valueOf(players);
+
+				games.removeIf(g -> p > g.getMaxPlayers());
+
+				games.removeIf(g -> p < g.getMinPlayers());
+
+			} catch (NumberFormatException e) {
+				// do nothing :)
 			}
+		}
+
+		if (!time.equals("")) {
+			log.info("Filtering time");
+			try {
+				int t = Integer.valueOf(time);
+				games.removeIf(g -> g.getPlayTime() > t);
+
+			} catch (NumberFormatException e) {
+				//
+			}
+		}
+
+		if (!age.equals("")) {
+			log.info("Filtering age");
+			try {
+				int a = Integer.valueOf(age);
+				games.removeIf(g -> g.getMinAge() < a);
+			} catch (NumberFormatException e) {
+				// donothing
+			}
+		}
+		if (!difficulty.equals("")) {
+			log.info("Filtering difficulty");
+			try {
+				float d = Float.valueOf(difficulty);
+				games.removeIf(g -> g.getDifficulty() > d);
+			} catch (NumberFormatException e) {
+				// nothing
+			}
+		}
+
+		if (!designer.equals("")) {
+			games.removeIf(g -> !g.getDesigner().contains(designer));
+		}
+
+		if (!artist.equals("")) {
+			games.removeIf(g -> !g.getArtist().contains(artist));
+
+		}
+		if (!publisher.equals("")) {
+			games.removeIf(g -> !g.getPublisher().contains(publisher));
 		}
 
 		// order
@@ -203,7 +276,7 @@ public class GamesResource {
 		if (order.equals("desc")) {
 			Collections.reverse(games);
 		}
-		
+
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("games", games);
 		return Response.ok(new Viewable("/game_list", map)).build();
@@ -222,23 +295,22 @@ public class GamesResource {
 	@POST
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response newGame(@FormDataParam("name") String name,
-			@FormDataParam("minPlayers") String minPlayers, @FormDataParam("maxPlayers") String maxPlayers,
-			@FormDataParam("playTime") String playTime, @FormDataParam("minAge") String minAge,
-			@FormDataParam("difficulty") String difficulty, @FormDataParam("designer") String designer,
-			@FormDataParam("artist") String artist, @FormDataParam("publisher") String publisher,
-			@FormDataParam("file") InputStream file, @FormDataParam("file") FormDataContentDisposition header,
-			@Context HttpServletResponse servletResponse) throws IOException {
+	public Response newGame(@FormDataParam("name") String name, @FormDataParam("minPlayers") String minPlayers,
+			@FormDataParam("maxPlayers") String maxPlayers, @FormDataParam("playTime") String playTime,
+			@FormDataParam("minAge") String minAge, @FormDataParam("difficulty") String difficulty,
+			@FormDataParam("designer") String designer, @FormDataParam("artist") String artist,
+			@FormDataParam("publisher") String publisher, @FormDataParam("file") InputStream file,
+			@FormDataParam("file") FormDataContentDisposition header, @Context HttpServletResponse servletResponse)
+			throws IOException {
 
-		
 		/*
 		 * Create new game
 		 */
 		Game game = new Game(name);
-		
+
 		// obtain id of new game
 		String id = game.getId();
-		
+
 		if (minPlayers != null) {
 			game.setMinPlayers(Integer.valueOf(minPlayers));
 		}
@@ -284,11 +356,12 @@ public class GamesResource {
 		os.flush();
 		os.close();
 		file.close();
-		
-//		game.setCoverArt("http://localhost:8080/boardgameamanger/rest/img/" + id);
+
+		// game.setCoverArt("http://localhost:8080/boardgameamanger/rest/img/" +
+		// id);
 
 		servletResponse.sendRedirect(game.getUri());
-		return Response.created(URI.create("http://localhost:8080/boardgameamanger/rest/games/"+id)).build();
+		return Response.created(URI.create("http://localhost:8080/boardgameamanger/rest/games/" + id)).build();
 	}
 
 	@Path("{game}")
