@@ -28,9 +28,50 @@
 	pageContext.setAttribute("username", username);
 %>
 
-<form id="logoutForm" action="http://localhost:8080/boardgamemanager/rest/logout" method="POST" style="display: none">
+
+
+<script>
+	$.ajaxSetup({
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader("application_key", "web");
+		}
+	});
+
+	var doGet = function(getUrl) {
+		$.ajax({
+			url : getUrl,
+			method : "GET",
+			dataType : "html",
+			success : function(html) {
+				document.open();
+				document.write(html);
+				document.close();
+			}
+		});
+	};
 	
-</form>
+	var doPost = function(postUrl, postData){
+		$.ajax({
+			url: postUrl,
+			method: "POST",
+			dataType : "html",
+			data: postData,
+			success: function(){
+				alert("ciao");
+			}
+		})
+	}
+	
+	var logout = function(){
+		$.ajax({
+			url: "http://localhost:8080/boardgamemanager/rest/logout",
+			method: "POST",
+			success: function(){
+				window.location.redirect("http://localhost:8080/boardgamemanager/");
+			}
+		})
+	}
+</script>
 
 
 <nav class="navbar navbar-default">
@@ -60,7 +101,8 @@
 						<li>
 					</c:otherwise>
 				</c:choose>
-				<a href="http://localhost:8080/boardgamemanager/rest/users">Users</a>
+				<a href="javascript:void(0);"
+					onclick="doGet('http://localhost:8080/boardgamemanager/rest/users'); return false">Users</a>
 				</li>
 				<c:choose>
 					<c:when test="${param.title == 'games' }">
@@ -70,7 +112,8 @@
 						<li>
 					</c:otherwise>
 				</c:choose>
-				<a href="http://localhost:8080/boardgamemanager/rest/games">Games</a>
+				<a href="javascrip:void(0);"
+					onclick="doGet('http://localhost:8080/boardgamemanager/rest/games'); return false">Games</a>
 				</li>
 
 				<c:choose>
@@ -81,7 +124,8 @@
 						<li>
 					</c:otherwise>
 				</c:choose>
-				<a href="http://localhost:8080/boardgamemanager/rest/plays">Plays</a>
+				<a href="javascrip:void(0);"
+					onclick="doGet('http://localhost:8080/boardgamemanager/rest/plays'); return false">Plays</a>
 				</li>
 			</ul>
 
@@ -94,21 +138,22 @@
 					aria-expanded="false">Menu <span class="caret"></span></a>
 					<ul class="dropdown-menu">
 						<c:if test="${valid_token }">
-							<li><a
-								href="http://localhost:8080/boardgamemanager/create_game.jsp">New
+							<li><a href="javascript:void(0);"
+								onclick="doGet('http://localhost:8080/boardgamemanager/create_game.jsp'); return false">New
 									Game</a></li>
-							<li><a
-								href="http://localhost:8080/boardgamemanager/create_play.jsp">New
+							<li><a href="javascript:void(0);"
+								onclick="doGet('http://localhost:8080/boardgamemanager/create_play.jsp'); return false">New
 									Play</a></li>
 							<li role="separator" class="divider"></li>
 
-							<li><a href="" onclick="$('#logoutForm').submit(); return false;">Logout</a></li>
+							<li><a href="javascript:void(0);"
+								onclick="logout(); return false">Logout</a></li>
 						</c:if>
 						<c:if test="${! valid_token }">
-							<li><a
-								href="http://localhost:8080/boardgamemanager/login.jsp">Login</a></li>
-							<li><a
-								href="http://localhost:8080/boardgamemanager/register.jsp">Register</a></li>
+							<li><a href="javascript:void(0);"
+								onclick="doGet('http://localhost:8080/boardgamemanager/login.jsp'); return false">Login</a></li>
+							<li><a href="javascript:void(0);"
+								onclick="doGet('http://localhost:8080/boardgamemanager/register.jsp'); return false">Register</a></li>
 						</c:if>
 
 					</ul></li>
