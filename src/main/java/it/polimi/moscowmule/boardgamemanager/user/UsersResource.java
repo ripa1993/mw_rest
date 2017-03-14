@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -45,6 +46,8 @@ public class UsersResource {
 	@Context
 	Request request;
 
+	private final static Logger log = Logger.getLogger(UsersResource.class.getName());
+
 	// application
 	// /users?filter=all&value=all&orderby=id&order=asc
 	// legal parameters
@@ -57,30 +60,41 @@ public class UsersResource {
 	// if desc then descending, otherwise ascending
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response getUsers(@DefaultValue("") @QueryParam("filter") String filter,
-			@DefaultValue("") @QueryParam("value") String value,
+	public Response getUsers(@DefaultValue("") @QueryParam("id") String id,
+			@DefaultValue("") @QueryParam("name") String name, @DefaultValue("") @QueryParam("country") String country,
+			@DefaultValue("") @QueryParam("state") String state, @DefaultValue("") @QueryParam("town") String town,
+
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
 		// new list of users
 		List<User> users = new ArrayList<User>();
 		users.addAll(UserStorage.instance.getModel().values());
 
-		// filter
-		if (!value.equals("")) {
-			switch (filter) {
-			case "name":
-				users.removeIf(u -> !u.getName().equals(value));
-				break;
-			case "country":
-				users.removeIf(u -> !u.getCountry().equals(value));
-				break;
-			case "state":
-				users.removeIf(u -> !u.getState().equals(value));
-				break;
-			case "town":
-				users.removeIf(u -> !u.getTown().equals(value));
-				break;
-			}
+		if (!id.equals("")) {
+			log.info("Filtering id");
+			users.removeIf(u -> !u.getId().contains(id));
+		}
+
+		if (!name.equals("")) {
+			log.info("Filtering name");
+			users.removeIf(u -> !u.getName().contains(name));
+		}
+
+		if (!country.equals("")) {
+			log.info("Filtering country");
+			users.removeIf(u -> !u.getCountry().contains(country));
+		}
+
+		if (!state.equals("")) {
+			log.info("Filtering state");
+			users.removeIf(u -> !u.getState().contains(state));
+
+		}
+
+		if (!town.equals("")) {
+			log.info("Filtering town");
+			users.removeIf(u -> !u.getTown().equals(town));
+
 		}
 
 		// order
@@ -119,35 +133,46 @@ public class UsersResource {
 	// browser
 	@GET
 	@Produces(MediaType.TEXT_HTML)
-	public Response getUsersBrowser(@DefaultValue("") @QueryParam("filter") String filter,
-			@DefaultValue("") @QueryParam("value") String value,
+	public Response getUsersBrowser(@DefaultValue("") @QueryParam("id") String id,
+			@DefaultValue("") @QueryParam("name") String name, @DefaultValue("") @QueryParam("country") String country,
+			@DefaultValue("") @QueryParam("state") String state, @DefaultValue("") @QueryParam("town") String town,
+
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
 		// new list of users
 		List<User> users = new ArrayList<User>();
 		users.addAll(UserStorage.instance.getModel().values());
 
-		// filter
-		if (!value.equals("")) {
-			switch (filter) {
-			case "name":
-				users.removeIf(u -> !u.getName().equals(value));
-				break;
-			case "country":
-				users.removeIf(u -> !u.getCountry().equals(value));
-				break;
-			case "state":
-				users.removeIf(u -> !u.getState().equals(value));
-				break;
-			case "town":
-				users.removeIf(u -> !u.getTown().equals(value));
-				break;
-			}
+		if (!id.equals("")) {
+			log.info("Filtering id");
+			users.removeIf(u -> !u.getId().contains(id));
+		}
+
+		if (!name.equals("")) {
+			log.info("Filtering name");
+			users.removeIf(u -> !u.getName().contains(name));
+		}
+
+		if (!country.equals("")) {
+			log.info("Filtering country");
+			users.removeIf(u -> !u.getCountry().contains(country));
+		}
+
+		if (!state.equals("")) {
+			log.info("Filtering state");
+			users.removeIf(u -> !u.getState().contains(state));
+
+		}
+
+		if (!town.equals("")) {
+			log.info("Filtering town");
+			users.removeIf(u -> !u.getTown().equals(town));
+
 		}
 
 		// order
 		if (!orderby.equals("") || !orderby.equals("id")) {
-			Comparator<User> comp = (User a, User b) -> a.getId().compareTo(b.getId());
+			Comparator<User> comp;
 			switch (orderby) {
 			case "name":
 				comp = (User a, User b) -> a.getName().compareTo(b.getName());
@@ -164,6 +189,9 @@ public class UsersResource {
 			case "town":
 				comp = (User a, User b) -> a.getTown().compareTo(b.getTown());
 				break;
+			default:
+				comp = (User a, User b) -> a.getId().compareTo(b.getId());
+				break;
 			}
 			Collections.sort(users, comp);
 		}
@@ -172,7 +200,7 @@ public class UsersResource {
 		if (order.equals("desc")) {
 			Collections.reverse(users);
 		}
-		
+
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("users", users);
 		return Response.ok(new Viewable("/user_list", map)).build();
@@ -190,13 +218,14 @@ public class UsersResource {
 	@POST
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response newUser(@FormParam("id") String id, @FormParam("password") String password, @FormParam("name") String name, @FormParam("mail") String mail,
-			@FormParam("country") String country, @FormParam("state") String state, @FormParam("town") String town,
+	public Response newUser(@FormParam("id") String id, @FormParam("password") String password,
+			@FormParam("name") String name, @FormParam("mail") String mail, @FormParam("country") String country,
+			@FormParam("state") String state, @FormParam("town") String town,
 			@Context HttpServletResponse servletResponse) throws IOException {
 		/*
 		 * Check if ID already exists
 		 */
-		if(UserStorage.instance.getModel().containsKey(id)){
+		if (UserStorage.instance.getModel().containsKey(id)) {
 			servletResponse.sendRedirect("../create_user.html");
 			return Response.status(Status.BAD_REQUEST).build();
 		}
@@ -223,7 +252,7 @@ public class UsersResource {
 		Authenticator authenticator = Authenticator.getInstance();
 		authenticator.create(id, password);
 		servletResponse.sendRedirect("../rest/users");
-		return Response.created(URI.create("http://localhost:8080/boardgamemanager/rest/users/"+id)).build();
+		return Response.created(URI.create("http://localhost:8080/boardgamemanager/rest/users/" + id)).build();
 	}
 
 	@Path("{user}")
@@ -248,7 +277,8 @@ public class UsersResource {
 		}
 		// filter
 		if (!date.equals("")) {
-			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			log.info("Filtering date");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 			Date dateD;
 			try {
 				dateD = df.parse(date);
@@ -258,6 +288,7 @@ public class UsersResource {
 			}
 		}
 		if (!game.equals("")) {
+			log.info("Filtering game");
 			plays.removeIf(p -> !p.getGameId().equals(game));
 		}
 
@@ -280,7 +311,7 @@ public class UsersResource {
 		if (order.equals("desc")) {
 			Collections.reverse(plays);
 		}
-		
+
 		return Response.ok(plays).build();
 	}
 
@@ -301,7 +332,9 @@ public class UsersResource {
 		}
 		// filter
 		if (!date.equals("")) {
-			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			log.info("Filtering date");
+
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 			Date dateD;
 			try {
 				dateD = df.parse(date);
@@ -311,6 +344,7 @@ public class UsersResource {
 			}
 		}
 		if (!game.equals("")) {
+			log.info("Filtering game");
 			plays.removeIf(p -> !p.getGameId().equals(game));
 		}
 
@@ -336,8 +370,8 @@ public class UsersResource {
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("plays", plays);
-		
+
 		return Response.ok(new Viewable("/play_list", map)).build();
 	}
-	
+
 }

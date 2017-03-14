@@ -16,8 +16,76 @@
 		<jsp:param name="title" value="users" />
 	</jsp:include>
 
+	<script>
+		var filter = function() {
+			var base = "http://localhost:8080/boardgamemanager/rest/users?";
+			var url = "";
+			if ($("#id").val())
+				url = url + "id=" + $("#id").val() + "&";
+
+			if ($("#name").val())
+				url = url + "name=" + $("#name").val() + "&";
+			if ($("#country").val())
+				url = url + "country=" + $("#country").val() + "&";
+			if ($("#state").val())
+				url = url + "state=" + $("#state").val() + "&";
+			if ($("#town").val())
+				url = url + "town=" + $("#town").val() + "&";
+			if ($("#orderby").val())
+				url = url + "orderby=" + $("#orderby").val() + "&";
+			if ($("#order").val())
+				url = url + "order=" + $("#order").val();
+			
+			window.location.href = base + url;
+		}
+	</script>
 
 
+	<div class="row">
+		<div class="container">
+			<form class="form-inline" id="filter-form">
+				<div class="form-group">
+					<label class="" for="id">ID</label> <input type="text"
+						class="form-control" id="id" placeholder="ripa1993">
+				</div>
+				<div class="form-group">
+					<label class="" for="name">User name</label> <input type="text"
+						class="form-control" id="name" placeholder="Simone">
+				</div>
+				<div class="form-group">
+					<label class="" for="country">Country</label> <input type="text"
+						class="form-control" id="country" placeholder="Italy">
+				</div>
+				<div class="form-group">
+					<label class="" for="state">State</label> <input type="text"
+						class="form-control" id="state" placeholder="CO">
+				</div>
+				<div class="form-group">
+					<label class="" for="town">Town</label> <input type="text"
+						class="form-control" id="town" placeholder="Guanzate">
+
+					<div class="form-group">
+						<label class="" for="orderby">Order By</label> <select
+							class="form-control" id="orderby">
+							<option value="id">ID</option>
+							<option value="name">Name</option>
+							<option value="country">Country</option>
+							<option value="state">State</option>
+							<option value="town">Town</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label class="" for="order">Ordering</label> <select
+							class="form-control" id="order">
+							<option value="asc">Ascending</option>
+							<option value="desc">Descending</option>
+						</select>
+					</div>
+
+					<button type="button" class="btn btn-default" onclick="filter();">Filter</button>
+			</form>
+		</div>
+	</div>
 
 	<div class="panel panel-default">
 		<div class="panel-heading">Users list</div>
