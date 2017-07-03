@@ -32,7 +32,7 @@ public class BusinessRESTResource {
 	 */
 	@POST
 	@Path("login")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Response login(@FormParam("username") String username, @FormParam("password") String password) {
 
 		Authenticator authenticator = Authenticator.getInstance();
@@ -42,16 +42,11 @@ public class BusinessRESTResource {
 		try {
 			String authToken = authenticator.login(username, password);
 			log.info("Login successful");
-			JsonObjectBuilder jsonObjBuilder = Json.createObjectBuilder();
-			jsonObjBuilder.add(HTTPHeaderNames.AUTH_TOKEN, authToken);
-			JsonObject jsonObj = jsonObjBuilder.build();
-			return Response.ok(jsonObj.toString()).build();
+			AuthToken at = new AuthToken(authToken);
+			return Response.ok(at).build();
 		} catch (LoginException e) {
 			log.info("Login failed");
-			JsonObjectBuilder jsonObjBuilder = Json.createObjectBuilder();
-			jsonObjBuilder.add("message", "Login is incorrect");
-			JsonObject jsonObj = jsonObjBuilder.build();
-			return Response.status(Status.UNAUTHORIZED).entity(jsonObj.toString()).build();
+			return Response.status(Status.UNAUTHORIZED).entity("Login is incorrect").build();
 		}
 
 	}

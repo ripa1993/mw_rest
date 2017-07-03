@@ -23,6 +23,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
@@ -158,7 +159,9 @@ public class GamesResource {
 			Collections.reverse(games);
 		}
 
-		return Response.ok(games).build();
+		GenericEntity<List<Game>> gameGeneric = new GenericEntity<List<Game>>(games){};
+		
+		return Response.ok(gameGeneric).build();
 	}
 
 	// browser
@@ -291,7 +294,6 @@ public class GamesResource {
 		return Response.ok(String.valueOf(count)).build();
 	}
 
-	// TODO: game id should be generated
 	@POST
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)

@@ -26,6 +26,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
@@ -36,6 +37,7 @@ import org.glassfish.jersey.server.mvc.Viewable;
 
 import it.polimi.moscowmule.boardgamemanager.authentication.Authenticator;
 import it.polimi.moscowmule.boardgamemanager.authentication.HTTPHeaderNames;
+import it.polimi.moscowmule.boardgamemanager.game.Game;
 import it.polimi.moscowmule.boardgamemanager.game.GameStorage;
 import it.polimi.moscowmule.boardgamemanager.user.UserStorage;
 
@@ -95,7 +97,11 @@ public class PlaysResource {
 		if (order.equals("desc")) {
 			Collections.reverse(plays);
 		}
-		return Response.ok(plays).build();
+		
+		GenericEntity<List<Play>> playsGeneric = new GenericEntity<List<Play>>(plays){};
+
+		
+		return Response.ok(playsGeneric).build();
 	}
 
 	// browser
