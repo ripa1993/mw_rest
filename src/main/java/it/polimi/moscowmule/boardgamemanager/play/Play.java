@@ -1,27 +1,69 @@
 package it.polimi.moscowmule.boardgamemanager.play;
 
+import static it.polimi.moscowmule.boardgamemanager.utils.Constants.BASE_URL;
+
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Representation of a boardgame play
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 @XmlRootElement
 @XmlType(propOrder = { "id", "userId", "gameId", "date", "timeToComplete", "numPlayers", "winnerId", "uri", "userUri",
 		"gameUri", "winnerUri" })
 public class Play {
-
+	/**
+	 * Used to generate unique IDs
+	 */
 	private static Integer counter = 1;
-
+	/**
+	 * The unique id of the plays
+	 */
 	private String id;
+	/**
+	 * The user id who created the play
+	 */
 	private String userId;
+	/**
+	 * The game id of the game played
+	 */
 	private String gameId;
+	/**
+	 * Date of the play
+	 */
 	private Date date;
-	private int timeToComplete; // minutes
-	private int numPlayers; // that partecipated
-	private String winnerId; // that won the game
+	/**
+	 * Time needed to complete the play, in minutes
+	 */
+	private int timeToComplete;
+	/**
+	 * Number of players that partecipated
+	 */
+	private int numPlayers;
+	/**
+	 * The user id of the player who won the game
+	 */
+	private String winnerId;
+	/**
+	 * URL to this play
+	 */
 	private String uri;
+	/**
+	 * URL to the user who created the play
+	 */
 	private String userUri;
+	/**
+	 * URL to the game played
+	 */
 	private String gameUri;
+	/**
+	 * URL to the user who won the play
+	 */
 	private String winnerUri;
 
 	public Play() {
@@ -36,9 +78,9 @@ public class Play {
 		this.userId = userId;
 		this.gameId = gameId;
 		this.date = date;
-		this.setUri("http://localhost:8080/boardgamemanager/rest/plays/" + id);
-		this.setUserUri("http://localhost:8080/boardgamemanager/rest/users/" + userId);
-		this.setGameUri("http://localhost:8080/boardgamemanager/rest/games/" + gameId);
+		this.setUri(BASE_URL+"rest/plays/" + id);
+		this.setUserUri(BASE_URL+"rest/users/" + userId);
+		this.setGameUri(BASE_URL+"rest/games/" + gameId);
 
 	}
 
@@ -96,7 +138,7 @@ public class Play {
 
 	public void setWinnerId(String winnerId) {
 		this.winnerId = winnerId;
-		this.setWinnerUri("http://localhost:8080/boardgamemanager/rest/users/" + winnerId);
+		this.setWinnerUri(BASE_URL+"rest/users/" + winnerId);
 	}
 
 	public String getUri() {

@@ -8,8 +8,8 @@
 
 <footer class="footer">
 	<div class="container">
-		<p class="text-muted">Powered by Moscow Mules. There are <%=UserStorage.instance.getModel().size()%>
-		users, <%=GameStorage.instance.getModel().size()%> games and <%=PlayStorage.instance.getModel().size()%>
+		<p class="text-muted">Powered by Moscow Mules. There are <%=UserStorage.instance.getCount()%>
+		users, <%=GameStorage.instance.getCount()%> games and <%=PlayStorage.instance.getCount()%>
 		plays.</p>
 	</div>
 </footer>

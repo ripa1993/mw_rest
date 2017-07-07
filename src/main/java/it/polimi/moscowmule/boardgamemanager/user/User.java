@@ -1,18 +1,50 @@
 package it.polimi.moscowmule.boardgamemanager.user;
 
+import static it.polimi.moscowmule.boardgamemanager.utils.Constants.BASE_URL;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Representation of an user
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 @XmlRootElement
 @XmlType(propOrder={"id", "name", "mail", "country", "state", "town", "uri", "playsUri"})
 public class User {
+	/**
+	 * Username
+	 */
 	private String id;
+	/**
+	 * Name
+	 */
 	private String name;
+	/**
+	 * Country
+	 */
 	private String country;
+	/**
+	 * State
+	 */
 	private String state;
+	/**
+	 * Town
+	 */
 	private String town;
+	/**
+	 * Email
+	 */
 	private String mail;
+	/**
+	 * URL to this user
+	 */
 	private String uri;
+	/**
+	 * URL to user's plays
+	 */
 	private String playsUri;
 
 	public User() {
@@ -21,8 +53,8 @@ public class User {
 	public User(String id, String name) {
 		this.id = id;
 		this.name = name;
-		this.uri = "http://localhost:8080/boardgamemanager/rest/users/"+id;
-		this.setPlaysUri("http://localhost:8080/boardgamemanager/rest/users/"+id+"/plays");
+		this.uri = BASE_URL +"rest/users/"+id;
+		this.playsUri = BASE_URL+"rest/users/"+id+"/plays";
 		this.country = "N/A";
 		this.state = "N/A";
 		this.town = "N/A";

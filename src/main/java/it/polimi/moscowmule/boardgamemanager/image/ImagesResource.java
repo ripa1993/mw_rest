@@ -10,17 +10,36 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+/**
+ * Resource representing an image file
+ */
 @Path("/img")
 public class ImagesResource {
+	/**
+	 * Folder where images are stored
+	 */
 	private static final String FOLDER = "C://boardgamemanager//img//";
+	/**
+	 * Path to courtesy image when no cover art is available
+	 */
 	private static final String MISSING = FOLDER+"missing.jpg";
+
+	/**
+	 * Retrieves the list of images available in the folder
+	 * @return string containing filenames
+	 */
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getContent(){
 		File f = new File(FOLDER);
 		return Arrays.toString(f.list());
 	}
-	
+
+	/**
+	 * Retrieves an image file
+	 * @param filename name of the image
+	 * @return the image
+	 */
 	@GET
 	@Path("{filename}")
 	@Produces("image/jpg")

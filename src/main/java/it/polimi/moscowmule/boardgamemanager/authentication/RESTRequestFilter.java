@@ -1,5 +1,7 @@
 package it.polimi.moscowmule.boardgamemanager.authentication;
 
+import static it.polimi.moscowmule.boardgamemanager.utils.Constants.AUTH_TOKEN;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -12,6 +14,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * Rest request filter, used to prevent unauthenticated users to perform certain operations.
+ * <br>
+ * All user can perform GET requests. All user can perform POST requests to /users and /login.
+ * Authenticated users can perform POST requests to /plays. Power users can perform POST requests to /games
+ * @author Simone Ripamonti
+ * @version 1
+ */
 @Provider
 @PreMatching
 public class RESTRequestFilter implements ContainerRequestFilter {
@@ -29,11 +39,11 @@ public class RESTRequestFilter implements ContainerRequestFilter {
 		}
 
 		Authenticator authenticator = Authenticator.getInstance();
-		String authToken = requestContext.getHeaderString(HTTPHeaderNames.AUTH_TOKEN);
+		String authToken = requestContext.getHeaderString(AUTH_TOKEN);
 		if (authToken == null) {
 			Map<String, Cookie> cookies = requestContext.getCookies();
-			if (cookies.containsKey(HTTPHeaderNames.AUTH_TOKEN)) {
-				authToken = requestContext.getCookies().get(HTTPHeaderNames.AUTH_TOKEN).getValue();
+			if (cookies.containsKey(AUTH_TOKEN)) {
+				authToken = requestContext.getCookies().get(AUTH_TOKEN).getValue();
 			}
 		}
 		log.info("auth_token=" + authToken);
@@ -49,8 +59,12 @@ public class RESTRequestFilter implements ContainerRequestFilter {
 				return;
 			}
 			if (path.startsWith("plays")){
-				// TODO: implement authorization
-				return;
+				if(authenticator.isAuthTokenValid(authToken)){
+					return;
+				} else {
+					log.info("Not authorized token");
+					requestContext.abortWith(Response.status(Status.UNAUTHORIZED).build());
+				}
 			}
 			if (!path.startsWith("login")) {
 				// and it is not about "login"

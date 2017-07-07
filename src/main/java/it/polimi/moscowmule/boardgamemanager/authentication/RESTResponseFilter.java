@@ -1,5 +1,7 @@
 package it.polimi.moscowmule.boardgamemanager.authentication;
 
+import static it.polimi.moscowmule.boardgamemanager.utils.Constants.AUTH_TOKEN;
+
 import java.io.IOException;
 
 import javax.ws.rs.container.ContainerRequestContext;
@@ -10,15 +12,18 @@ import javax.ws.rs.ext.Provider;
 
 import java.util.logging.Logger;
 
+/**
+ * Rest response filter, used to add headers to the response
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 @Provider
 @PreMatching
 public class RESTResponseFilter implements ContainerResponseFilter {
 
 	private final static Logger log = Logger.getLogger(RESTResponseFilter.class.getName());
-	/*
-	 * Add headers to the response
-	 *
-	 */
+
 	@Override
 	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
 			throws IOException {
@@ -27,6 +32,6 @@ public class RESTResponseFilter implements ContainerResponseFilter {
 		responseContext.getHeaders().add( "Access-Control-Allow-Origin", "*" ); 
         responseContext.getHeaders().add( "Access-Control-Allow-Credentials", "true" );
         responseContext.getHeaders().add( "Access-Control-Allow-Methods", "GET, POST, DELETE, PUT" );
-        responseContext.getHeaders().add( "Access-Control-Allow-Headers", HTTPHeaderNames.AUTH_TOKEN );	}
+        responseContext.getHeaders().add( "Access-Control-Allow-Headers", AUTH_TOKEN );	}
 
 }

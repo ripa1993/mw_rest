@@ -16,7 +16,14 @@
 	</jsp:include>
 
 	<div class="container">
-		<form class="form-horizontal" action="../boardgamemanager/rest/users" method="POST">
+	
+		<c:forEach var="error" items="${it.errors}">
+			<div class="alert alert-danger">
+			  ${error }
+			</div>
+		</c:forEach>
+	
+		<form class="form-horizontal" action="../rest/users" method="POST">
 			<div class="form-group">
 				<label for="id" class="col-sm-2 control-label">Username</label>
 				<div class="col-sm-10">

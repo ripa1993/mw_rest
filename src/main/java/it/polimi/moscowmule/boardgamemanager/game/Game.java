@@ -1,26 +1,71 @@
 package it.polimi.moscowmule.boardgamemanager.game;
 
+import static it.polimi.moscowmule.boardgamemanager.utils.Constants.BASE_URL;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Representation of a board game
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 @XmlRootElement
 @XmlType(propOrder = { "id", "name", "minPlayers", "maxPlayers", "playTime", "minAge", "difficulty", "designer",
 		"artist", "publisher", "coverArt", "uri" })
 public class Game {
-	
+	/**
+	 * Used to generate unique ID
+	 */
 	private static Integer counter = 1;
-	
+	/**
+	 * Id of the game
+	 */
 	private String id;
+	/**
+	 * Name of the game
+	 */
 	private String name;
+	/**
+	 * Minimum number of players
+	 */
 	private int minPlayers;
+	/**
+	 * Maximum number of players
+	 */
 	private int maxPlayers;
-	private int playTime; // minutes
+	/**
+	 * Time needed to play the game, in minutes
+	 */
+	private int playTime;
+	/**
+	 * Suggested minimum age to play the game
+	 */
 	private int minAge;
-	private float difficulty; // 1.00 easy -> 5.00 hard
+	/**
+	 * Difficulty of the game: 1.00 = easy, 5.00 = hard
+	 */
+	private float difficulty;
+	/**
+	 * Comma separated list of designer names
+	 */
 	private String designer;
+	/**
+	 * Comma separated list of artists
+	 */
 	private String artist;
+	/**
+	 * Comma separated list of publishers
+	 */
 	private String publisher;
+	/**
+	 * URL to cover art
+	 */
 	private String coverArt;
+	/**
+	 * URL to this game
+	 */
 	private String uri;
 
 	public Game() {
@@ -33,8 +78,8 @@ public class Game {
 			counter++;
 		}
 		this.name = name;
-		this.uri = "http://localhost:8080/boardgamemanager/rest/games/"+id;
-		this.coverArt = "http://localhost:8080/boardgamemanager/rest/img/"+id+".jpg";
+		this.uri = BASE_URL+"rest/games/"+id;
+		this.coverArt = BASE_URL+"rest/img/"+id+".jpg";
 		this.minPlayers = 0;
 		this.maxPlayers = 99;
 		this.playTime = 0;

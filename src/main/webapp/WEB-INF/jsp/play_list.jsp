@@ -1,6 +1,10 @@
+<%@page import="java.text.SimpleDateFormat"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page import="it.polimi.moscowmule.boardgamemanager.game.GameStorage"%>
+<%@ page import ="it.polimi.moscowmule.boardgamemanager.play.Play" %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -35,8 +39,8 @@
 		<div class="container">
 			<form class="form-inline" id="filter-form">
 				<div class="form-group">
-					<label class="" for="game">Game name</label> <input type="text"
-						class="form-control" id="game" placeholder="Risk">
+					<label class="" for="game">Game id</label> <input type="text"
+						class="form-control" id="game" placeholder="1">
 				</div>
 				<div class="form-group">
 					<label class="" for="date">Date</label> <input
@@ -69,8 +73,17 @@
 
 		<div id="games" class="list-group">
 			<c:forEach var="play" items="${it.plays}">
-				<a href="${play.uri}" class="list-group-item">Created by user
-					${play.userId } on game ${play.gameId } on ${play.date }</a>
+				<a href="${play.uri}" class="list-group-item">
+					<%
+						Play play = (Play) pageContext.getAttribute("play");
+						SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+						String text = "";
+						text += "Created by user " + play.getUserId();
+						text += " on game " + GameStorage.instance.getAllNames().get(play.getGameId());
+						text += " played on " + sdf.format(play.getDate());
+						out.println(text);
+					%>
+				</a>
 			</c:forEach>
 		</div>
 	</div>

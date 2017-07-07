@@ -1,14 +1,32 @@
 package it.polimi.moscowmule.boardgamemanager.game;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class that stores data using an hashmap, easily an external database is implementable
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 public enum GameStorage {
+	/**
+	 * Singleton instance
+	 */
 	instance;
 
+	/**
+	 * Hashmap that stores [game_id, game]
+	 */
 	private Map<String, Game> contentProvider = new HashMap<>();
 
-	/*
+	/**
+	 * Hashmap that stores [game_id, game_name]
+	 */
+	private Map<String, String> idToName = new HashMap<>();
+	
+	/**
 	 * Populating with dummy games
 	 */
 	private GameStorage(){
@@ -22,7 +40,7 @@ public enum GameStorage {
 		game.setDesigner("Rob Daviau, Matt Leacock");
 		game.setArtist("Chris Quilliams");
 		game.setPublisher("Z-Man Games");
-		contentProvider.put(game.getId(), game);
+		storeGame(game);
 		Game game2 = new Game("Terra Mystica: Gaia Project");
 		game2.setMinPlayers(1);
 		game2.setMaxPlayers(4);
@@ -32,7 +50,7 @@ public enum GameStorage {
 		game2.setDesigner("Jens Drögemüller, Helge Ostertag");
 		game2.setArtist("Dennis Lohausen");
 		game2.setPublisher("Asmodee, Feuerland Spiele");
-		contentProvider.put(game2.getId(), game2);
+		storeGame(game2);
 		Game game3 = new Game("Through the Ages: A New Story of Civilization");
 		game3.setMinPlayers(2);
 		game3.setMaxPlayers(4);
@@ -42,7 +60,7 @@ public enum GameStorage {
 		game3.setDesigner("Vlaada Chvátil");
 		game3.setArtist("Jakub Politzer, Milan Vavroň");
 		game3.setPublisher("Cranio Creations");
-		contentProvider.put(game3.getId(), game3);
+		storeGame(game3);
 		Game game4 = new Game("Twilight Struggle");
 		game4.setMinPlayers(2);
 		game4.setMaxPlayers(2);
@@ -52,7 +70,7 @@ public enum GameStorage {
 		game4.setDesigner("Ananda Gupta, Jason Matthews");
 		game4.setArtist("Viktor Csete, Rodger B. MacGowan, Chechu Nieto, Guillaume Ries, Mark Simonitch");
 		game4.setPublisher("GMT Games");
-		contentProvider.put(game4.getId(), game4);
+		storeGame(game4);
 		Game game5 = new Game("Star Wars: Rebellion");
 		game5.setMinPlayers(2);
 		game5.setMaxPlayers(4);
@@ -61,11 +79,32 @@ public enum GameStorage {
 		game5.setDifficulty(3.56f);
 		game5.setDesigner("Corey Konieczka");
 		game5.setPublisher("ADC Blackfire Entertainment");
-		contentProvider.put(game5.getId(), game5);
+		storeGame(game5);
 		
 	}
-
-	public Map<String, Game> getModel() {
-		return contentProvider;
+	
+	public Collection<Game> getAllGames(){
+		return contentProvider.values();
+	}
+	
+	public Map<String, String> getAllNames(){
+		return new HashMap<String, String>(idToName);
+	}
+	
+	public void storeGame(Game game){
+		contentProvider.put(game.getId(), game);
+		idToName.put(game.getId(), game.getName());
+	}
+	
+	public Game getGame(String id){
+		return contentProvider.get(id);
+	}
+	
+	public int getCount(){
+		return contentProvider.size();
+	}
+	
+	public boolean existsId(String id){
+		return contentProvider.containsKey(id);
 	}
 }

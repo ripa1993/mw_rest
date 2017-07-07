@@ -6,17 +6,23 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Game: ${it.game.id }</title>
+<title>Login</title>
 <jsp:include page="/WEB-INF/jsp/includes.jsp" />
 
 </head>
 <body>
 	<jsp:include page="/WEB-INF/jsp/header.jsp">
-		<jsp:param name="title" value="Game" />
+		<jsp:param name="title" value="Login" />
 	</jsp:include>
+	
+		<c:forEach var="error" items="${it.errors}">
+			<div class="alert alert-danger">
+			  ${error }
+			</div>
+		</c:forEach>
 
 	<div class="container">
-		<form class="form-signin" action="../boardgamemanager/rest/login"
+		<form class="form-signin" action="../rest/login"
 			method="POST">
 			<h2 class="form-signin-heading">Please sign in</h2>
 			<label for="username" class="sr-only">Username</label> <input

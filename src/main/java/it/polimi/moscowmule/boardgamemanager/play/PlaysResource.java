@@ -1,5 +1,7 @@
 package it.polimi.moscowmule.boardgamemanager.play;
 
+import static it.polimi.moscowmule.boardgamemanager.utils.Constants.AUTH_TOKEN;
+
 import java.io.IOException;
 import java.net.URI;
 import java.text.DateFormat;
@@ -36,83 +38,94 @@ import javax.ws.rs.core.UriInfo;
 import org.glassfish.jersey.server.mvc.Viewable;
 
 import it.polimi.moscowmule.boardgamemanager.authentication.Authenticator;
-import it.polimi.moscowmule.boardgamemanager.authentication.HTTPHeaderNames;
-import it.polimi.moscowmule.boardgamemanager.game.Game;
 import it.polimi.moscowmule.boardgamemanager.game.GameStorage;
 import it.polimi.moscowmule.boardgamemanager.user.UserStorage;
+import it.polimi.moscowmule.boardgamemanager.utils.Message;
 
+/**
+ * Resource representing the list of plays
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 @Path("/plays")
 public class PlaysResource {
 	@Context
 	UriInfo uriInfo;
 	@Context
 	Request request;
-	
+
 	private final static Logger log = Logger.getLogger(PlaysResource.class.getName());
 
-
-	// app
+	/**
+	 * Retrieves a list of plays matching the criteria
+	 * 
+	 * @param date
+	 *            of the play
+	 * @param game
+	 *            played
+	 * @param orderby
+	 *            value in [date, game]
+	 * @param order
+	 *            value in [asc, desc]
+	 * @return XML or JSON list of plays matching the criteria
+	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response getPlays(@DefaultValue("") @QueryParam("date") String date,
 			@DefaultValue("") @QueryParam("game") String game,
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
-		List<Play> plays = new ArrayList<Play>();
-		plays.addAll(PlayStorage.instance.getModel().values());
-
-		// filter
-		if (!date.equals("")) {
-			log.info("Filtering date");
-			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-			Date dateD;
-			try {
-				dateD = df.parse(date);
-				plays.removeIf(p -> !p.getDate().equals(dateD));
-			} catch (ParseException e) {
-				// do nothing if date is not valid
-			}
-		}
-		if (!game.equals("")) {
-			log.info("Filtering game");
-			plays.removeIf(p -> !p.getGameId().equals(game));
-		}
-
-		// order
-		if (!orderby.equals("") || !orderby.equals("id")) {
-			Comparator<Play> comp = (Play a, Play b) -> a.getId().compareTo(b.getId());
-			switch (orderby) {
-			case "date":
-				comp = (Play a, Play b) -> a.getDate().compareTo(b.getDate());
-				break;
-
-			case "game":
-				comp = (Play a, Play b) -> a.getGameId().compareTo(b.getGameId());
-				break;
-			}
-			Collections.sort(plays, comp);
-		}
-
-		// if descending
-		if (order.equals("desc")) {
-			Collections.reverse(plays);
-		}
-		
-		GenericEntity<List<Play>> playsGeneric = new GenericEntity<List<Play>>(plays){};
-
-		
+		List<Play> plays = getPlaysCommon(date, game, orderby, order);
+		GenericEntity<List<Play>> playsGeneric = new GenericEntity<List<Play>>(plays) {
+		};
 		return Response.ok(playsGeneric).build();
 	}
 
-	// browser
+	/**
+	 * Retrieves a list of plays matching the criteria
+	 * 
+	 * @param date
+	 *            of the play
+	 * @param game
+	 *            played
+	 * @param orderby
+	 *            value in [date, game]
+	 * @param order
+	 *            value in [asc, desc]
+	 * @return HTML list of plays matching the criteria
+	 */
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	public Response getPlaysBrowser(@DefaultValue("") @QueryParam("date") String date,
 			@DefaultValue("") @QueryParam("game") String game,
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
+		List<Play> plays = getPlaysCommon(date, game, orderby, order);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("plays", plays);
+		return Response.ok(new Viewable("/play_list", map)).build();
+	}
+
+	/**
+	 * Retrieves a list of plays matching the criteria
+	 * 
+	 * @param date
+	 *            of the play
+	 * @param game
+	 *            played
+	 * @param orderby
+	 *            value in [date, game]
+	 * @param order
+	 *            value in [asc, desc]
+	 * @return list of {@link Play} matching criteria
+	 */
+	private List<Play> getPlaysCommon(@DefaultValue("") @QueryParam("date") String date,
+			@DefaultValue("") @QueryParam("game") String game,
+			@DefaultValue("id") @QueryParam("orderby") String orderby,
+			@DefaultValue("asc") @QueryParam("order") String order) {
 		List<Play> plays = new ArrayList<Play>();
-		plays.addAll(PlayStorage.instance.getModel().values());
+		plays.addAll(PlayStorage.instance.getAllPlays());
 
 		// filter
 		if (!date.equals("")) {
@@ -150,69 +163,193 @@ public class PlaysResource {
 		if (order.equals("desc")) {
 			Collections.reverse(plays);
 		}
-
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("plays", plays);
-		return Response.ok(new Viewable("/play_list", map)).build();
+		return plays;
 	}
 
+	/**
+	 * Retrieves the count of plays
+	 * 
+	 * @return count of plays
+	 */
 	@GET
 	@Path("count")
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response getCount() {
-		int count = PlayStorage.instance.getModel().size();
+		int count = PlayStorage.instance.getCount();
 		return Response.ok(String.valueOf(count)).build();
 	}
 
+	/**
+	 * Adds a new play to the storage
+	 * 
+	 * @param gameId
+	 *            id of the game REQUIRED
+	 * @param date
+	 *            date of the play REQUIRED
+	 * @param timeToComplete
+	 *            time needed to complete the play
+	 * @param numPlayers
+	 *            players who partecipated
+	 * @param winnerId
+	 *            id of the player who won the game
+	 * @param servletResponse
+	 * @param servletRequest
+	 * @return
+	 * @throws IOException
+	 */
 	@POST
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response newPlay(
-			// @FormParam("userId") String userId,
-			@FormParam("gameId") String gameId, @FormParam("date") String date,
+	public Response newPlay(@FormParam("gameId") String gameId, @FormParam("date") String date,
 			@FormParam("timeToComplete") String timeToComplete, @FormParam("numPlayers") String numPlayers,
 			@FormParam("winnerId") String winnerId, @Context HttpServletResponse servletResponse,
 			@Context HttpServletRequest servletRequest) throws IOException {
-		String authToken = servletRequest.getHeader(HTTPHeaderNames.AUTH_TOKEN);
+		String authToken = servletRequest.getHeader(AUTH_TOKEN);
 		if (authToken == null) {
 			javax.servlet.http.Cookie[] cookies = servletRequest.getCookies();
 			for (javax.servlet.http.Cookie c : cookies) {
-				if (c.getName().equals(HTTPHeaderNames.AUTH_TOKEN)) {
+				if (c.getName().equals(AUTH_TOKEN)) {
 					authToken = c.getValue();
 				}
 			}
 		}
+
 		String userId = Authenticator.getInstance().getUserFromToken(authToken);
 
-		if (UserStorage.instance.getModel().containsKey(userId)
-				&& GameStorage.instance.getModel().containsKey(gameId)) {
-			
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-			Date d;
-			try {
-				d = df.parse(date);
-			} catch (ParseException e) {
-				d = new Date();
-			}
-			Play play = new Play(userId, gameId, d);
-			if (timeToComplete != null) {
-				play.setTimeToComplete(Integer.valueOf(timeToComplete));
-			}
-			if (numPlayers != null) {
-				play.setNumPlayers(Integer.valueOf(numPlayers));
-			}
-			if (UserStorage.instance.getModel().containsKey(winnerId)) {
-				play.setWinnerId(winnerId);
-			}
+		Message errorMessages = checkErrorsNewPlay(gameId, date, winnerId, userId);
 
-			PlayStorage.instance.getModel().put(play.getId(), play);
-
-			servletResponse.sendRedirect(play.getUri());
-			return Response.created(URI.create(play.getUri())).build();
+		if (errorMessages.getErrors().size() > 0) {
+			log.info("errors:" + errorMessages.getErrors().size());
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("errors", errorMessages.getErrors());
+			return Response.status(Status.BAD_REQUEST).entity(new Viewable("/create_play", map)).build();
 		}
-		return Response.status(Status.BAD_REQUEST).build();
+
+		log.info("POST play: userId: " + userId + " gameId: " + gameId);
+
+		Play play = storePlay(gameId, date, timeToComplete, numPlayers, winnerId, userId);
+
+		servletResponse.sendRedirect(play.getUri());
+		return Response.created(URI.create(play.getUri())).build();
+
 	}
 
+	@POST
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response newPlayApp(@FormParam("gameId") String gameId, @FormParam("date") String date,
+			@FormParam("timeToComplete") String timeToComplete, @FormParam("numPlayers") String numPlayers,
+			@FormParam("winnerId") String winnerId, @Context HttpServletResponse servletResponse,
+			@Context HttpServletRequest servletRequest) {
+
+		String authToken = servletRequest.getHeader(AUTH_TOKEN);
+		if (authToken == null) {
+			javax.servlet.http.Cookie[] cookies = servletRequest.getCookies();
+			for (javax.servlet.http.Cookie c : cookies) {
+				if (c.getName().equals(AUTH_TOKEN)) {
+					authToken = c.getValue();
+				}
+			}
+		}
+
+		String userId = Authenticator.getInstance().getUserFromToken(authToken);
+
+		Message errorMessages = checkErrorsNewPlay(gameId, date, winnerId, userId);
+
+		if (errorMessages.getErrors().size() > 0) {
+			return Response.status(Status.BAD_REQUEST).entity(errorMessages).build();
+		}
+
+		log.info("POST play: userId: " + userId + " gameId: " + gameId);
+
+		Play play = storePlay(gameId, date, timeToComplete, numPlayers, winnerId, userId);
+
+		return Response.created(URI.create(play.getUri())).entity(play).build();
+
+	}
+
+	private Message checkErrorsNewPlay(String gameId, String date, String winnerId, String userId) {
+		Message errorMessages = new Message();
+
+		if (UserStorage.instance.existsId(userId)) {
+			if (date == null) {
+				errorMessages.getErrors().add("Please insert date");
+			} else if (date.length() == 0) {
+				errorMessages.getErrors().add("Date field cannot be empty!");
+			} else {
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+				try{
+					df.parse(date);
+				}
+				catch(ParseException e){
+					errorMessages.getErrors().add("Date field should be in format yyyy-MM-dd");
+				}
+			}
+
+			if (gameId == null) {
+				errorMessages.getErrors().add("Please insert gameId");
+			} else if (gameId.length() == 0){
+				errorMessages.getErrors().add("GameId field cannot be empty!");
+			} else if (!GameStorage.instance.existsId(gameId)) {
+				errorMessages.getErrors().add("GameId doesn't exists");
+			}
+			
+			if (winnerId != null && !UserStorage.instance.existsId(winnerId)) {
+				errorMessages.getErrors().add("WinnerId doesn't exists");
+			}
+			
+		} else {
+			errorMessages.getErrors().add("Your user id doesn't exists!");
+		}
+		return errorMessages;
+	}
+
+	private Play storePlay(String gameId, String date, String timeToComplete, String numPlayers, String winnerId,
+			String userId) {
+		
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date d;
+		try {
+			d = df.parse(date);
+		} catch (ParseException e) {
+			d = new Date();
+		}
+		
+		Play play = new Play(userId, gameId, d);
+		
+		/*
+		 * Complete optional fields
+		 */
+		if (timeToComplete != null && timeToComplete.length()>0) {
+			try{
+				play.setTimeToComplete(Integer.valueOf(timeToComplete));
+			} catch(NumberFormatException e){
+				// ignore field, since it's optional
+			}
+		}
+		
+		if (numPlayers != null) {
+			try{
+			play.setNumPlayers(Integer.valueOf(numPlayers));
+			} catch(NumberFormatException e){
+				// ignore field, since it's optional
+			}
+		}
+		
+		if (UserStorage.instance.existsId(winnerId)) {
+			play.setWinnerId(winnerId);
+		}
+
+		PlayStorage.instance.storePlay(play);
+		return play;
+	}
+
+	/**
+	 * Retrieves a single play given the id
+	 * 
+	 * @param id
+	 * @return
+	 */
 	@Path("{play}")
 	public PlayResource getPlay(@PathParam("play") String id) {
 		return new PlayResource(uriInfo, request, id);

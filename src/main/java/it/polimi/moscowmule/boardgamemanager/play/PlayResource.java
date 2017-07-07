@@ -13,6 +13,12 @@ import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.server.mvc.Viewable;
 
+/**
+ * Resource representing a play
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 public class PlayResource {
 	@Context
 	UriInfo uriInfo;
@@ -25,21 +31,28 @@ public class PlayResource {
 		this.request = request;
 		this.id = id;
 	}
-	
-	// app
+
+	/**
+	 * Retrieves a play
+	 * @return XML or JSON representation of the play
+	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response getPlay() {
-		Play play = PlayStorage.instance.getModel().get(id);
+		Play play = PlayStorage.instance.getPlay(id);
 		if (play == null)
 			throw new RuntimeException("Get: Play with " + id + " not found");
 		return Response.ok(play).build();
 	}
-	
+
+	/***
+	 * Retrieves a play
+	 * @return HTML representation of the play
+	 */
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	public Response getPlayBrowser() {
-		Play play = PlayStorage.instance.getModel().get(id);
+		Play play = PlayStorage.instance.getPlay(id);
 		if (play == null)
 			throw new RuntimeException("Get: Play with " + id + " not found");
 		Map<String, Object> map = new HashMap<String, Object>();

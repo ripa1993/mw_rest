@@ -1,12 +1,13 @@
 package it.polimi.moscowmule.boardgamemanager.authentication;
 
+import static it.polimi.moscowmule.boardgamemanager.utils.Constants.*;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +21,10 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
+import org.glassfish.jersey.server.mvc.Viewable;
+
+import it.polimi.moscowmule.boardgamemanager.utils.Message;
 
 @Path("/")
 public class BusinessRESTResource {
@@ -46,7 +51,7 @@ public class BusinessRESTResource {
 			return Response.ok(at).build();
 		} catch (LoginException e) {
 			log.info("Login failed");
-			return Response.status(Status.UNAUTHORIZED).entity("Login is incorrect").build();
+			return Response.status(Status.UNAUTHORIZED).entity(new Message("Login failed! Check username and password")).build();
 		}
 
 	}
@@ -64,17 +69,20 @@ public class BusinessRESTResource {
 		try {
 			String authToken = authenticator.login(username, password);
 			log.info("Login successful");
-			Cookie cookie = new Cookie("auth_token", authToken);
-			cookie.setDomain("localhost");
-			cookie.setPath("/boardgamemanager");
+			Cookie cookie = new Cookie(AUTH_TOKEN, authToken);
+			cookie.setDomain(COOKIE_DOMAIN);
+			cookie.setPath(COOKIE_PATH);
 
 			response.addCookie(cookie);
-			response.sendRedirect("http://localhost:8080/boardgamemanager/");
+			response.sendRedirect(BASE_URL);
 			return Response.ok().build();
 		} catch (LoginException e) {
 			log.info("Login failed");
-			response.sendRedirect("../login.jsp");
-			return Response.status(Status.UNAUTHORIZED).build();
+			Map<String, Object> map = new HashMap<String, Object>();
+			Message errorMessages = new Message();
+			errorMessages.getErrors().add("Login failed! Check username and password");
+			map.put("errors", errorMessages.getErrors());
+			return Response.status(Status.UNAUTHORIZED).entity(new Viewable("/login", map)).build();
 		}
 
 	}
@@ -82,14 +90,14 @@ public class BusinessRESTResource {
 	@POST
 	@Path("logout")
 	@Produces(MediaType.TEXT_HTML)
-	public Response logoutBrowser(@Context HttpServletResponse response, @CookieParam("auth_token") String authToken)
+	public Response logoutBrowser(@Context HttpServletResponse response, @CookieParam(AUTH_TOKEN) String authToken)
 			throws IOException {
-		Cookie cookie = new Cookie("auth_token", authToken);
-		cookie.setDomain("localhost");
-		cookie.setPath("/boardgamemanager");
-		cookie.setMaxAge(0);
+		Cookie cookie = new Cookie(AUTH_TOKEN, authToken);
+		cookie.setDomain(COOKIE_DOMAIN);
+		cookie.setPath(COOKIE_PATH);
+		cookie.setMaxAge(COOKIE_AGE);
 		response.addCookie(cookie);
-		response.sendRedirect("http://localhost:8080/boardgamemanager/");
+		response.sendRedirect(BASE_URL);
 		return Response.ok().build();
 	}
 
@@ -102,14 +110,14 @@ public class BusinessRESTResource {
 	public Response logout(@Context HttpHeaders httpHeaders) {
 		try {
 			Authenticator authenticator = Authenticator.getInstance();
-			String authToken = httpHeaders.getHeaderString(HTTPHeaderNames.AUTH_TOKEN);
+			String authToken = httpHeaders.getHeaderString(AUTH_TOKEN);
 			log.info("Trying to logout auth_token=" + authToken);
 			authenticator.logout(authToken);
 			log.info("Logout successful");
 			return Response.noContent().build();
 		} catch (GeneralSecurityException e) {
 			log.info("Logout failed");
-			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+			return Response.status(Status.NO_CONTENT).entity(new Message("Your auth token was already invalid")).build();
 		}
 
 	}

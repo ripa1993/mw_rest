@@ -13,12 +13,17 @@ import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.server.mvc.Viewable;
 
-// resource relative to a single user
+/**
+ * Resource representing a single user
+ */
 public class UserResource {
 	@Context
 	UriInfo uriInfo;
 	@Context
 	Request request;
+	/**
+	 * The username
+	 */
 	String id;
 
 	public UserResource(UriInfo uriInfo, Request request, String id) {
@@ -27,21 +32,27 @@ public class UserResource {
 		this.id = id;
 	}
 
-	// application
+	/**
+	 * Retrieves the user
+	 * @return XML or JSON representation of the user
+	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response getUser() {
-		User user = UserStorage.instance.getModel().get(id);
+		User user = UserStorage.instance.getUser(id);
 		if (user == null)
 			throw new RuntimeException("Get: User with " + id + " not found");
 		return Response.ok(user).build();
 	}
 
-	// browser
+	/**
+	 * Retrieves the user
+	 * @return HTML representation of the user
+	 */
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	public Response getUserBrowser() {
-		User user = UserStorage.instance.getModel().get(id);
+		User user = UserStorage.instance.getUser(id);
 		if (user == null)
 			throw new RuntimeException("Get: User with " + id + " not found");
 		Map<String, Object> map = new HashMap<String, Object>();

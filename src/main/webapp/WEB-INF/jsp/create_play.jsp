@@ -14,11 +14,18 @@
 </head>
 <body>
 	<jsp:include page="/WEB-INF/jsp/header.jsp">
-		<jsp:param name="title" value="Game" />
+		<jsp:param name="title" value="Play" />
 	</jsp:include>
 
 	<div class="container">
-		<form class="form-horizontal" action="../boardgamemanager/rest/plays" method="POST">
+	
+		<c:forEach var="error" items="${it.errors}">
+			<div class="alert alert-danger">
+			  ${error }
+			</div>
+		</c:forEach>
+	
+		<form class="form-horizontal" action="../rest/plays" method="POST">
 
 			<!-- <div class="form-group">
 				<label for="userId" class="col-sm-2 control-label">User</label>
