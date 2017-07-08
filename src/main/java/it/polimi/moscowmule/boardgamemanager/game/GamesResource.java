@@ -409,8 +409,8 @@ public class GamesResource {
 		if (designer.length() == 0) {
 			errorMessages.getErrors().add("Designer names field can't be empty!");
 		}
-		if (file != null && (!header.getFileName().toLowerCase().endsWith(".jpg")
-				|| !header.getFileName().toLowerCase().endsWith(".jpeg"))) {
+		if (file != null && !header.getFileName().toLowerCase().endsWith(".jpg")
+				&& !header.getFileName().toLowerCase().endsWith(".jpeg")) {
 			errorMessages.getErrors().add("Game cover art should be in .jpg or .jpeg extension");
 		}
 		return errorMessages;

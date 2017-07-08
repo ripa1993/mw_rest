@@ -135,6 +135,7 @@ public class BusinessRESTResource {
 	 */
 	@POST
 	@Path("logout")
+	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Response logoutApp(@Context HttpHeaders httpHeaders) {
 		try {
 			Authenticator authenticator = Authenticator.getInstance();

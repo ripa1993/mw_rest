@@ -66,14 +66,14 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="designers" class="col-sm-2 control-label">Designers</label>
+				<label for="esigner" class="col-sm-2 control-label">Designer</label>
 				<div class="col-sm-10">
-					<input type="text" class="form-control" name="designers"
+					<input type="text" class="form-control" name="designer"
 						placeholder="Arthur Boyle, Charlie Doom">
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="artists" class="col-sm-2 control-label">Artists</label>
+				<label for="artist" class="col-sm-2 control-label">Artist</label>
 				<div class="col-sm-10">
 					<input type="text" class="form-control" name="artist"
 						placeholder="Emily Ferguson, George Hot">

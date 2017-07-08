@@ -45,9 +45,9 @@ public class Authenticator {
 	 */
 	private Authenticator() {
 		// dummy data
-		usersStorage.put("ripa1993", "password");
-		usersStorage.put("storna", "password");
-		usersStorage.put("rpressiani", "password");
+		create("ripa1993", "password");
+		create("storna", "password");
+		create("rpressiani", "password");
 		powerUsers.add("ripa1993");
 	}
 
