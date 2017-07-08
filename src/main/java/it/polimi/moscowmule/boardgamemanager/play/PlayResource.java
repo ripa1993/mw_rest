@@ -10,8 +10,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.glassfish.jersey.server.mvc.Viewable;
+
+import it.polimi.moscowmule.boardgamemanager.utils.Message;
 
 /**
  * Resource representing a play
@@ -34,30 +37,35 @@ public class PlayResource {
 
 	/**
 	 * Retrieves a play
-	 * @return XML or JSON representation of the play
+	 * @return 	OK: XML or JSON representation of the play {@link Play}
+	 * 			NOT_FOUND: error message {@link Message}
 	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response getPlay() {
+	public Response getPlayApp() {
 		Play play = PlayStorage.instance.getPlay(id);
 		if (play == null)
-			throw new RuntimeException("Get: Play with " + id + " not found");
+			return Response.status(Status.NOT_FOUND).entity(new Message("PlayId not found")).build();
 		return Response.ok(play).build();
 	}
 
 	/***
 	 * Retrieves a play
-	 * @return HTML representation of the play
+	 * @return 	OK: HTML representation of the play
+	 * 			NOT_FOUND: 404 page
 	 */
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	public Response getPlayBrowser() {
 		Play play = PlayStorage.instance.getPlay(id);
-		if (play == null)
-			throw new RuntimeException("Get: Play with " + id + " not found");
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("play", play);
-		return Response.ok(new Viewable("/play_detail", map)).build();
+		if (play == null){
+			map.put("not_found", true);
+			return Response.status(Status.NOT_FOUND).entity(new Viewable("/play_detail", map)).build();
+		} else {
+			return Response.ok(new Viewable("/play_detail", map)).build();
+		}		
 	}
 	
 	

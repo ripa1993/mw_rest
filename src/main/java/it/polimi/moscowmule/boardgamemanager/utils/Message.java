@@ -5,6 +5,11 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Class used to contain single message or list of errors
+ * @author Simone Ripamonti
+ * @version 1
+ */
 @XmlRootElement
 public class Message {
 	private String message;

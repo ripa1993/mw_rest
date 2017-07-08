@@ -83,23 +83,44 @@ public enum GameStorage {
 		
 	}
 	
+	/**
+	 * Returns all the {@link Game} in the storage
+	 * @return
+	 */
 	public Collection<Game> getAllGames(){
 		return contentProvider.values();
 	}
 	
+	/**
+	 * Returns a map [id, name] for all the games
+	 * @return
+	 */
 	public Map<String, String> getAllNames(){
 		return new HashMap<String, String>(idToName);
 	}
 	
+	/**
+	 * Stores a game
+	 * @param game
+	 */
 	public void storeGame(Game game){
 		contentProvider.put(game.getId(), game);
 		idToName.put(game.getId(), game.getName());
 	}
 	
+	/**
+	 * Retrieves a game with the given id
+	 * @param id
+	 * @return possible a null pointer
+	 */
 	public Game getGame(String id){
 		return contentProvider.get(id);
 	}
 	
+	/**
+	 * Retrieves the count of games stored
+	 * @return
+	 */
 	public int getCount(){
 		return contentProvider.size();
 	}

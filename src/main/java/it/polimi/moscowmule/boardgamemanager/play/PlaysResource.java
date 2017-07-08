@@ -68,11 +68,11 @@ public class PlaysResource {
 	 *            value in [date, game]
 	 * @param order
 	 *            value in [asc, desc]
-	 * @return XML or JSON list of plays matching the criteria
+	 * @return OK: XML or JSON list of plays matching the criteria
 	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response getPlays(@DefaultValue("") @QueryParam("date") String date,
+	public Response getPlaysApp(@DefaultValue("") @QueryParam("date") String date,
 			@DefaultValue("") @QueryParam("game") String game,
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
@@ -93,7 +93,7 @@ public class PlaysResource {
 	 *            value in [date, game]
 	 * @param order
 	 *            value in [asc, desc]
-	 * @return HTML list of plays matching the criteria
+	 * @return 	OK: HTML list of plays matching the criteria
 	 */
 	@GET
 	@Produces(MediaType.TEXT_HTML)
@@ -169,7 +169,7 @@ public class PlaysResource {
 	/**
 	 * Retrieves the count of plays
 	 * 
-	 * @return count of plays
+	 * @return OK: count of plays
 	 */
 	@GET
 	@Path("count")
@@ -194,7 +194,8 @@ public class PlaysResource {
 	 *            id of the player who won the game
 	 * @param servletResponse
 	 * @param servletRequest
-	 * @return
+	 * @return	BAD_REQUEST: display error messages
+	 * 			CREATED: the created resource
 	 * @throws IOException
 	 */
 	@POST
@@ -234,6 +235,25 @@ public class PlaysResource {
 
 	}
 
+	/**
+	 * Adds a new play to the storage
+	 * 
+	 * @param gameId
+	 *            id of the game REQUIRED
+	 * @param date
+	 *            date of the play REQUIRED
+	 * @param timeToComplete
+	 *            time needed to complete the play
+	 * @param numPlayers
+	 *            players who partecipated
+	 * @param winnerId
+	 *            id of the player who won the game
+	 * @param servletResponse
+	 * @param servletRequest
+	 * @return	BAD_REQUEST: error messages {@link Message}
+	 * 			CREATED: the created resource {@link Play}
+	 * @return
+	 */
 	@POST
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -268,6 +288,14 @@ public class PlaysResource {
 
 	}
 
+	/**
+	 * Checks if the parameters allow to create a valid play
+	 * @param gameId
+	 * @param date
+	 * @param winnerId
+	 * @param userId
+	 * @return message possibly containing errors
+	 */
 	private Message checkErrorsNewPlay(String gameId, String date, String winnerId, String userId) {
 		Message errorMessages = new Message();
 
@@ -304,6 +332,16 @@ public class PlaysResource {
 		return errorMessages;
 	}
 
+	/**
+	 * Creates and stores the play
+	 * @param gameId
+	 * @param date
+	 * @param timeToComplete
+	 * @param numPlayers
+	 * @param winnerId
+	 * @param userId
+	 * @return
+	 */
 	private Play storePlay(String gameId, String date, String timeToComplete, String numPlayers, String winnerId,
 			String userId) {
 		

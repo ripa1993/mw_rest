@@ -9,9 +9,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.server.mvc.Viewable;
+
+import it.polimi.moscowmule.boardgamemanager.utils.Message;
 
 /**
  * Resource representing a single game
@@ -37,30 +40,36 @@ public class GameResource {
 
 	/**
 	 * Retrieves a game
-	 * @return XML or JSON representation of the game
+	 * @return 	OK: XML or JSON representation of the game {@link Game}
+	 * 			NOT_FOUND: error message {@link Message}
 	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response getGame() {
+	public Response getGameApp() {
 		Game game = GameStorage.instance.getGame(id);
 		if (game == null)
-			throw new RuntimeException("Get: Game with " + id + " not found");
+			return Response.status(Status.NOT_FOUND).entity(new Message("GameId not found")).build();
 		return Response.ok(game).build();
 	}
 
 	/**
 	 * Retrieves a game
-	 * @return HTML representation of the game
+	 * @return 	OK: HTML representation of the game
+	 * 			NOT_FOUND: 404 page
 	 */
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	public Response getGameBrowser() {
 		Game game = GameStorage.instance.getGame(id);
-		if (id == null)
-			throw new RuntimeException("Get: Game with " + id + " not found");
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("game", game);
-		return Response.ok(new Viewable("/game_detail", map)).build();
+		if (game == null){
+			map.put("not_found", true);
+			return Response.status(Status.NOT_FOUND).entity(new Viewable("/game_detail", map)).build();
+		} else {
+			return Response.ok(new Viewable("/game_detail", map)).build();
+		}
+		
 	}
 
 }

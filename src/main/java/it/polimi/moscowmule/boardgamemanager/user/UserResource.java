@@ -9,12 +9,18 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.server.mvc.Viewable;
 
+import it.polimi.moscowmule.boardgamemanager.utils.Message;
+
 /**
  * Resource representing a single user
+ * 
+ * @author Simone Ripamonti
+ * @version 1
  */
 public class UserResource {
 	@Context
@@ -34,29 +40,34 @@ public class UserResource {
 
 	/**
 	 * Retrieves the user
-	 * @return XML or JSON representation of the user
+	 * @return	OK: XML or JSON representation of the user {@link User}
+	 * 			NOT_FOUND: error message {@link Message}
 	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response getUser() {
 		User user = UserStorage.instance.getUser(id);
 		if (user == null)
-			throw new RuntimeException("Get: User with " + id + " not found");
+			return Response.status(Status.NOT_FOUND).entity(new Message("UserId not found")).build();
 		return Response.ok(user).build();
 	}
 
 	/**
 	 * Retrieves the user
-	 * @return HTML representation of the user
+	 * @return 	OK: HTML representation of the user
+	 * 			NOT_FOUND: 404 page
 	 */
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	public Response getUserBrowser() {
 		User user = UserStorage.instance.getUser(id);
-		if (user == null)
-			throw new RuntimeException("Get: User with " + id + " not found");
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("user", user);
-		return Response.ok(new Viewable("/user_detail", map)).build();
+		if (user == null){
+			map.put("not_found", true);
+			return Response.status(Status.NOT_FOUND).entity(new Viewable("/user_detail", map)).build();
+		} else {
+			return Response.ok(new Viewable("/user_detail", map)).build();
+		}
 	}
 }

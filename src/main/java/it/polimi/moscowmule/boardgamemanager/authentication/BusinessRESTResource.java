@@ -26,19 +26,29 @@ import org.glassfish.jersey.server.mvc.Viewable;
 
 import it.polimi.moscowmule.boardgamemanager.utils.Message;
 
+/**
+ * Resource that handles authentication of the users
+ * 
+ * @author Simone Ripamonti
+ * @version 1
+ */
 @Path("/")
 public class BusinessRESTResource {
 
 	private final static Logger log = Logger.getLogger(BusinessRESTResource.class.getName());
 
-	/*
-	 * Receives username and password Returns an authorization token in JSON
-	 * format
+
+	/**
+	 * Handles the login using the provided credentials
+	 * @param username REQUIRED
+	 * @param password REQUIRED 
+	 * @return  OK: the generated authentication token {@link AuthToken}
+	 * 			UNAUTHORIZED: login failure message {@link Message}
 	 */
 	@POST
 	@Path("login")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public Response login(@FormParam("username") String username, @FormParam("password") String password) {
+	public Response loginApp(@FormParam("username") String username, @FormParam("password") String password) {
 
 		Authenticator authenticator = Authenticator.getInstance();
 
@@ -56,10 +66,19 @@ public class BusinessRESTResource {
 
 	}
 
+	/**
+	 * Handles the login using the provided credentials
+	 * @param username REQUIRED
+	 * @param password REQUIRED
+	 * @param response
+	 * @return  OK: receive cookie and redirect to homepage
+	 * 			UNAUTHORIZED: login failure, show error message on login page
+	 * @throws IOException
+	 */
 	@POST
 	@Path("login")
 	@Produces(MediaType.TEXT_HTML)
-	public Response loginWeb(@FormParam("username") String username, @FormParam("password") String password,
+	public Response loginBrowser(@FormParam("username") String username, @FormParam("password") String password,
 			@Context HttpServletResponse response) throws IOException {
 
 		Authenticator authenticator = Authenticator.getInstance();
@@ -87,6 +106,13 @@ public class BusinessRESTResource {
 
 	}
 
+	/**
+	 * Handles the logout 
+	 * @param response
+	 * @param authToken as a cookie parameter, if available
+	 * @return OK: redirect to homepage
+	 * @throws IOException
+	 */
 	@POST
 	@Path("logout")
 	@Produces(MediaType.TEXT_HTML)
@@ -101,20 +127,22 @@ public class BusinessRESTResource {
 		return Response.ok().build();
 	}
 
-	/*
-	 * Logs out, no content is returned INTERNAL_SERVER_ERROR if an incorrect
-	 * auth_token is passed in the header
+	/**
+	 * Handles the logout
+	 * @param httpHeaders
+	 * @return  OK: the auth token is revoked {@link Message}
+	 * 			NO_CONTENT: if the auth_token was already invalid {@link Message}
 	 */
 	@POST
 	@Path("logout")
-	public Response logout(@Context HttpHeaders httpHeaders) {
+	public Response logoutApp(@Context HttpHeaders httpHeaders) {
 		try {
 			Authenticator authenticator = Authenticator.getInstance();
 			String authToken = httpHeaders.getHeaderString(AUTH_TOKEN);
 			log.info("Trying to logout auth_token=" + authToken);
 			authenticator.logout(authToken);
 			log.info("Logout successful");
-			return Response.noContent().build();
+			return Response.ok(new Message("Auth token revoked")).build();
 		} catch (GeneralSecurityException e) {
 			log.info("Logout failed");
 			return Response.status(Status.NO_CONTENT).entity(new Message("Your auth token was already invalid")).build();

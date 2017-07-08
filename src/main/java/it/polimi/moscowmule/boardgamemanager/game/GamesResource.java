@@ -29,8 +29,8 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -80,11 +80,11 @@ public class GamesResource {
 	 *            difficulty, designer, artist, publisher]
 	 * @param order
 	 *            value in [asc, desc]
-	 * @return XML or JSON list of games matching the criteria
+	 * @return 	OK: XML or JSON list of games matching the criteria {@link Game}
 	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response getGames(@DefaultValue("") @QueryParam("name") String name,
+	public Response getGamesApp(@DefaultValue("") @QueryParam("name") String name,
 			@DefaultValue("") @QueryParam("players") String players, @DefaultValue("") @QueryParam("time") String time,
 			@DefaultValue("") @QueryParam("age") String age,
 			@DefaultValue("") @QueryParam("difficulty") String difficulty,
@@ -126,7 +126,7 @@ public class GamesResource {
 	 *            difficulty, designer, artist, publisher]
 	 * @param order
 	 *            value in [asc, desc]
-	 * @return HTML representation of the list of games matching the criteria
+	 * @return 	OK: HTML representation of the list of games matching the criteria
 	 */
 	@GET
 	@Produces(MediaType.TEXT_HTML)
@@ -285,7 +285,7 @@ public class GamesResource {
 	/**
 	 * Gets the count of games available
 	 * 
-	 * @return the count
+	 * @return	OK: the count
 	 */
 	@GET
 	@Path("count")
@@ -311,13 +311,14 @@ public class GamesResource {
 	 *            the image representing the cover art of the game
 	 * @param header
 	 * @param servletResponse
-	 * @return
+	 * @return	BAD_REQUEST: if something went wrong
+	 * 			CREATED: if ok
 	 * @throws IOException
 	 */
 	@POST
 	@Produces(MediaType.TEXT_HTML)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response newGame(@FormDataParam("name") String name, @FormDataParam("minPlayers") String minPlayers,
+	public Response newGameBrowser(@FormDataParam("name") String name, @FormDataParam("minPlayers") String minPlayers,
 			@FormDataParam("maxPlayers") String maxPlayers, @FormDataParam("playTime") String playTime,
 			@FormDataParam("minAge") String minAge, @FormDataParam("difficulty") String difficulty,
 			@FormDataParam("designer") String designer, @FormDataParam("artist") String artist,
@@ -341,6 +342,24 @@ public class GamesResource {
 		return Response.created(URI.create(game.getUri())).build();
 	}
 
+	/**
+	 * 
+	 * @param name
+	 * @param minPlayers
+	 * @param maxPlayers
+	 * @param playTime
+	 * @param minAge
+	 * @param difficulty
+	 * @param designer
+	 * @param artist
+	 * @param publisher
+	 * @param file the image representing the cover art of the game
+	 * @param header
+	 * @param servletResponse
+	 * @return	BAD_REQUEST: if something went wrong {@link Message}
+	 * 			CREATED: if ok {@link Message}
+	 * @throws IOException
+	 */
 	@POST
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -364,6 +383,14 @@ public class GamesResource {
 		return Response.created(URI.create(game.getUri())).entity(game).build();
 	}
 
+	/**
+	 * Checks if there are errors in creating a game with the given parameters
+	 * @param name
+	 * @param designer
+	 * @param file
+	 * @param header
+	 * @return {@link Message} containing possible errors
+	 */
 	private Message checkErrorsNewGame(String name, String designer, InputStream file,
 			FormDataContentDisposition header) {
 		Message errorMessages = new Message();
@@ -389,6 +416,21 @@ public class GamesResource {
 		return errorMessages;
 	}
 
+	/**
+	 * Creates and stores a game with the given characteristcs
+	 * @param name
+	 * @param minPlayers
+	 * @param maxPlayers
+	 * @param playTime
+	 * @param minAge
+	 * @param difficulty
+	 * @param designer
+	 * @param artist
+	 * @param publisher
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
 	private Game storeGame(String name, String minPlayers, String maxPlayers, String playTime, String minAge,
 			String difficulty, String designer, String artist, String publisher, InputStream file) throws IOException {
 		Game game = new Game(name);

@@ -38,18 +38,35 @@ public enum PlayStorage {
 		storePlay(play3);
 	}
 	
+	/**
+	 * Stores a play
+	 * @param play
+	 */
 	public void storePlay(Play play){
 		contentProvider.put(play.getId(), play);
 	}
 	
+	/**
+	 * Retireves the count of plays
+	 * @return
+	 */
 	public int getCount(){
 		return contentProvider.size();
 	}
 	
+	/**
+	 * Retrieves a play
+	 * @param id
+	 * @return possible null pointer
+	 */
 	public Play getPlay(String id){
 		return contentProvider.get(id);
 	}
 	
+	/**
+	 * Retrieves all the plays in storage
+	 * @return
+	 */
 	public Collection<Play> getAllPlays(){
 		return contentProvider.values();
 	}

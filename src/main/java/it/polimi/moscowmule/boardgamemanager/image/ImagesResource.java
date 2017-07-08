@@ -9,6 +9,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 /**
  * Resource representing an image file
@@ -26,7 +27,7 @@ public class ImagesResource {
 
 	/**
 	 * Retrieves the list of images available in the folder
-	 * @return string containing filenames
+	 * @return OK: string containing filenames
 	 */
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
@@ -38,7 +39,8 @@ public class ImagesResource {
 	/**
 	 * Retrieves an image file
 	 * @param filename name of the image
-	 * @return the image
+	 * @return	OK: the image requested
+	 * 			NOT_FOUND: a courtesy image
 	 */
 	@GET
 	@Path("{filename}")
@@ -54,7 +56,7 @@ public class ImagesResource {
 			response = builder.build();
 		} else {
 			file = new File(MISSING);
-			javax.ws.rs.core.Response.ResponseBuilder builder = Response.status(404).entity(file);
+			javax.ws.rs.core.Response.ResponseBuilder builder = Response.status(Status.NOT_FOUND).entity(file);
 			builder.header("Content-Disposition", "attachment; filename=" + file.getName());
 			response = builder.build();
 		}

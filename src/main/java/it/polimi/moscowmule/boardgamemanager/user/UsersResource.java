@@ -52,16 +52,17 @@ public class UsersResource {
 
 	private final static Logger log = Logger.getLogger(UsersResource.class.getName());
 
-	// application
-	// /users?filter=all&value=all&orderby=id&order=asc
-	// legal parameters
-	// filter = name, country, state, town
-	// value = anything
-	// if value = "" or filter = "" then no filtering is performed
-	// orderby = name, country, state, town
-	// if no valid orderby is specified then default "id" is used
-	// order = *, desc
-	// if desc then descending, otherwise ascending
+	/**
+	 * Retrieves list of users
+	 * @param id of the user
+	 * @param name of the user
+	 * @param country of the user
+	 * @param state of the user
+	 * @param town of the user
+	 * @param orderby value in [id, name, country, state, town]
+	 * @param order value in [asc, desc]
+	 * @return	OK: list of users {@link User}
+	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response getUsersApp(@DefaultValue("") @QueryParam("id") String id,
@@ -74,7 +75,17 @@ public class UsersResource {
 		return Response.ok(usersGeneric).build();
 	}
 
-	// browser
+	/**
+	 * Retrieves list of users
+	 * @param id of the user
+	 * @param name of the user
+	 * @param country of the user
+	 * @param state of the user
+	 * @param town of the user
+	 * @param orderby value in [id, name, country, state, town]
+	 * @param order value in [asc, desc]
+	 * @return	OK: html representation of the list of users
+	 */
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	public Response getUsersBrowser(@DefaultValue("") @QueryParam("id") String id,
@@ -88,6 +99,17 @@ public class UsersResource {
 		return Response.ok(new Viewable("/user_list", map)).build();
 	}
 
+	/**
+	 * Retrieves a list of user
+	 * @param id
+	 * @param name
+	 * @param country
+	 * @param state
+	 * @param town
+	 * @param orderby
+	 * @param order
+	 * @return
+	 */
 	private List<User> getUsersCommon(String id, String name, String country, String state, String town, String orderby, String order) {
 		// new list of users
 		List<User> users = new ArrayList<User>();
@@ -153,7 +175,10 @@ public class UsersResource {
 		return users;
 	}
 
-	// count of users
+	/**
+	 * Retrieves the count of all user
+	 * @return
+	 */
 	@GET
 	@Path("count")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -172,7 +197,8 @@ public class UsersResource {
 	 * @param state
 	 * @param town
 	 * @param servletResponse
-	 * @return
+	 * @return	BAD_REQUEST: if something went wrong
+	 * 			CREATED: the created resource
 	 * @throws IOException
 	 */
 	@POST
@@ -209,7 +235,8 @@ public class UsersResource {
 	 * @param state
 	 * @param town
 	 * @param servletResponse
-	 * @return
+	 * @return	BAD_REQUEST: message with errors {@link Message}
+	 * 			CREATED: the created resource {@link User}
 	 * @throws IOException
 	 */
 	@POST
@@ -235,6 +262,13 @@ public class UsersResource {
 		return Response.created(URI.create(user.getUri())).entity(user).build();
 	}
 
+	/**
+	 * Chcek if there are errros when creating a user with this parameters
+	 * @param id
+	 * @param password
+	 * @param name
+	 * @return
+	 */
 	private Message checkErrorNewUser(String id, String password, String name) {
 		Message errorMessages = new Message();
 		
@@ -261,6 +295,17 @@ public class UsersResource {
 		return errorMessages;
 	}
 
+	/**
+	 * Create and store the user using this parameters
+	 * @param id
+	 * @param password
+	 * @param name
+	 * @param mail
+	 * @param country
+	 * @param state
+	 * @param town
+	 * @return
+	 */
 	private User storeUser(String id, String password, String name, String mail, String country, String state,
 			String town) {
 		
@@ -291,11 +336,26 @@ public class UsersResource {
 		return user;
 	}
 
+	/**
+	 * Resource representing a single user
+	 * @param id
+	 * @return
+	 */
 	@Path("{user}")
 	public UserResource getUser(@PathParam("user") String id) {
 		return new UserResource(uriInfo, request, id);
 	}
 
+	/**
+	 * Plays of a given user
+	 * @param id of the user REQUIRED
+	 * @param date
+	 * @param game
+	 * @param orderby value in [date, game]
+	 * @param order value in [asc, desc]
+	 * @return	NOT_FOUND: if the user doesnt exists {@link Message}
+	 * 			OK: the requested user plays {@link Play}
+	 */
 	@GET
 	@Path("{user}/plays")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -304,13 +364,27 @@ public class UsersResource {
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
 		
-		// TODO: check if user exists
+		if(UserStorage.instance.equals(id)){
+			List<Play> plays = getPlaysCommon(id, date, game, orderby, order);
+			GenericEntity<List<Play>> playsGeneric = new GenericEntity<List<Play>>(plays){};
+			return Response.ok(playsGeneric).build();
+		} else {
+			return Response.status(Status.NOT_FOUND).entity(new Message("User not found")).build();
+		}
 		
-		List<Play> plays = getPlaysCommon(id, date, game, orderby, order);
-		GenericEntity<List<Play>> playsGeneric = new GenericEntity<List<Play>>(plays){};
-		return Response.ok(playsGeneric).build();
+
 	}
 
+	/**
+	 * Plays of a given user
+	 * @param id of the user REQUIRED
+	 * @param date
+	 * @param game
+	 * @param orderby value in [date, game]
+	 * @param order value in [asc, desc]
+	 * @return	NOT_FOUND: if the user doesnt exists 
+	 * 			OK: the requested user plays 
+	 */
 	@GET
 	@Path("{user}/plays")
 	@Produces(MediaType.TEXT_HTML)
@@ -318,15 +392,27 @@ public class UsersResource {
 			@DefaultValue("") @QueryParam("game") String game,
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
-		
-		// TODO: check if user exists
-		
-		List<Play> plays = getPlaysCommon(id, date, game, orderby, order);
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("plays", plays);
-		return Response.ok(new Viewable("/play_list", map)).build();
+		if(UserStorage.instance.existsId(id)){
+			List<Play> plays = getPlaysCommon(id, date, game, orderby, order);
+			map.put("plays", plays);
+			return Response.ok(new Viewable("/play_list", map)).build();
+		} else {
+			map.put("not_found", true);
+			return Response.status(Status.NOT_FOUND).entity(new Viewable("/user_detail", map)).build();
+		}
+
 	}
 
+	/**
+	 * Retrieves plays of a user
+	 * @param id
+	 * @param date
+	 * @param game
+	 * @param orderby
+	 * @param order
+	 * @return
+	 */
 	private List<Play> getPlaysCommon(String id, String date, String game, String orderby, String order) {
 		List<Play> plays = new ArrayList<Play>();
 		Iterator<Play> it = PlayStorage.instance.getAllPlays().iterator();
