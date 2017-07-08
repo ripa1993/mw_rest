@@ -276,7 +276,7 @@ public class UsersResource {
 			errorMessages.getErrors().add("Please insert id!");
 		} else if ( id.length() == 0){
 			errorMessages.getErrors().add("Id field cannot be empty!");
-		} else if (UserStorage.instance.existsId(id)) {
+		} else if (UserStorage.instance.existsId(id) || id.equals("count")) {
 			errorMessages.getErrors().add("Id already in use");
 		}
 		
