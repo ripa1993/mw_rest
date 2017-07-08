@@ -364,7 +364,7 @@ public class UsersResource {
 			@DefaultValue("id") @QueryParam("orderby") String orderby,
 			@DefaultValue("asc") @QueryParam("order") String order) {
 		
-		if(UserStorage.instance.equals(id)){
+		if(UserStorage.instance.existsId(id)){
 			List<Play> plays = getPlaysCommon(id, date, game, orderby, order);
 			GenericEntity<List<Play>> playsGeneric = new GenericEntity<List<Play>>(plays){};
 			return Response.ok(playsGeneric).build();
