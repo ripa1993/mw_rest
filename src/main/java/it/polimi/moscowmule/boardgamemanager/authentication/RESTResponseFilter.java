@@ -31,7 +31,7 @@ public class RESTResponseFilter implements ContainerResponseFilter {
 		
 		responseContext.getHeaders().add( "Access-Control-Allow-Origin", "*" ); 
         responseContext.getHeaders().add( "Access-Control-Allow-Credentials", "true" );
-        responseContext.getHeaders().add( "Access-Control-Allow-Methods", "GET, POST, DELETE, PUT" );
+        responseContext.getHeaders().add( "Access-Control-Allow-Methods", "GET, POST" );
         responseContext.getHeaders().add( "Access-Control-Allow-Headers", AUTH_TOKEN );	}
 
 }
